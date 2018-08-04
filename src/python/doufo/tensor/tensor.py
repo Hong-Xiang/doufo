@@ -1,14 +1,17 @@
-from dxl.data import Functor
+from doufo import Functor
 from collections.abc import Iterable
 from abc import abstractproperty, ABC
 import numpy as np
 from typing import TypeVar
 import functools
 import operator
+from .binary import *
+from .unary import *
+from .unary_reduce import *
+from .unary_with_args import *
 
 from doufo.tensor import (to_tensor_like, as_scalar,
-                          is_scalar, shape, ndim, as_scalar)
-from .changeshape import 
+                          is_scalar, shape, ndim, as_scalar, sum_)
 
 T = TypeVar('TensorLike')
 
@@ -54,7 +57,7 @@ class Tensor(Functor[T]):
         return (Tensor(x) if not is_scalar(x) else as_scalar(x) for x in self.unbox())
 
     def fmap(self, f):
-        return Tensor(f(self.unbox))
+        return Tensor(f(self.unbox()))
 
     def __eq__(self, t):
         return self.fmap(lambda d: d == t)
@@ -69,14 +72,10 @@ class Tensor(Functor[T]):
         return self.fmap(lambda d: t * d)
 
     def __matmul__(self, t):
-        if isinstance(t, Tensor):
-            t = t.join()
-        return Tensor(self.join() @ t)
+        return matmul(self , t)
 
     def __rmatmaul__(self, t):
-        if isinstance(t, Tensor):
-            t = t.join()()
-        return Tensor(t @ self.unbox())
+        return matmul(t , self)
 
     def __len__(self):
         return len(self.unbox())
@@ -115,10 +114,10 @@ class Tensor(Functor[T]):
         return self.fmap(lambda d: -d)
 
     def __repr__(self):
-        return repr(self.unbox)
+        return repr(self.unbox())
 
     def __str__(self):
-        return str(self.unbox)
+        return str(self.unbox())
 
 
 def is_result_scalar(result, s):
@@ -129,19 +128,25 @@ def is_result_scalar(result, s):
     return False
 
 
-__fmaped_funcs = [_square, _unit, _abs_]
-__unboxed_funcs = [_as_scalar, _to_tensor_like, _is_scalar]
+__fmaped_funcs = [square, unit, abs_]
+__unboxed_funcs = [as_scalar, to_tensor_like, is_scalar, sum_, ndim]
 
 for f in __fmaped_funcs:
     f.register(Tensor)(lambda t: t.fmap(f))
 
 for f in __unboxed_funcs:
-    f.register(Tennsor)(lambda t: f(t.unbox()))
+    f.register(Tensor)(lambda t: f(t.unbox()))
 
 
 @transpose.register(Tensor)
 def _(t, perm=None):
     return t.fmap(lambda t: transpose(t, perm))
 
+@norm.register(Tensor)
+def _(t, p=2.0):
+    return norm(t.unbox(), p)
 
-@all_
+
+@all_close.register(Tensor)
+def _(x, y):
+    return all_close(x.unbox(), Tensor(y).unbox())

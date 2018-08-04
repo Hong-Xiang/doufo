@@ -2,6 +2,7 @@ from typing import Iterable, Callable, Optional
 from .control import Functor
 from .function import identity
 import itertools
+from .on_collections import take_
 
 __all__ = ['PureIterable', 'IterableElemMap', 'IterableIterMap', 'Count']
 
@@ -51,3 +52,8 @@ class Count(PureIterable):
 
     def __iter__(self):
         return itertools.count(self.start, self.step)
+
+
+@take_.register(Iterable)
+def _(xs:Iterable, n:int)->Iterable:
+    return IterableIterMap(xs, itertools.islice(0, n))

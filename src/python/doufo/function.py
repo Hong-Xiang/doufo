@@ -4,7 +4,7 @@ import functools
 import inspect
 from typing import Callable, Union, Generic, cast, Any
 
-__all__ = ['PureFunction', 'func', 'identity', 'flip']
+__all__ = ['PureFunction', 'func', 'identity', 'flip', 'singledispatch']
 
 from typing import TypeVar
 
@@ -17,9 +17,7 @@ C = TypeVar('C')
 class PureFunction(Callable[[A], B], Monad[Callable[[A], B]]):
     def __init__(self, f, *, nargs=None):
         self.f = f
-        if nargs is None:
-            nargs = len(inspect.getfullargspec(f).args)
-        self.nargs = nargs
+        self.nargs = nargs or guess_nargs(f)
 
     def __call__(self, *args, **kwargs) -> Union['PureFunction', B]:
         if len(args) < self.nargs:
@@ -41,21 +39,16 @@ class PureFunction(Callable[[A], B], Monad[Callable[[A], B]]):
     def unbox(self) -> Callable[..., B]:
         return self.f
 
-    # def apply(self, x):
-        # return PureFunction(partial(self.__call__, x))
 
-# FIXME convinient singledispatch function
+def guess_nargs(f):
+    return len(inspect.getfullargspec(f).args)
 
 class SingleDispatchFunction(PureFunction):
     def __init__(self, f):
-        def helper(*args, **kwargs):
-            return f(*args, **kwargs)
-        super().__init__(func(f))
-        f = functools.singledispatch(f)
-        self.kernel = f
+        super().__init__(functools.singledispatch(f), nargs=guess_nargs(f))
 
     def register(self, *args, **kwargs):
-        return self.kernel.register(*args, **kwargs)
+        return self.f.register(*args, **kwargs)
 
 
 def singledispatch(f):

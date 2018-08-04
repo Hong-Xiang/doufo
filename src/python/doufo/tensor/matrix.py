@@ -1,5 +1,6 @@
 from .tensor import Tensor
 import numpy as np
+# from doufo.tensor import ndim
 
 
 class Matrix(Tensor):
@@ -11,22 +12,20 @@ class Matrix(Tensor):
     def fmap(self, f):
         return Matrix(f(self.data))
 
-    def __matmul__(self, t):
-        from dxl.function.tensor import ndim
-        from .vector import Vector
-        result = Tensor(self) @ Tensor(t)
-        if isinstance(t, Vector):
-            return Vector(result)
-        if isinstance(t, Matrix):
-            return Matrix(result)
-        return Vector(result) if ndim(result) <= 1 else Matrix(result)
+    # def __matmul__(self, t):
+        # result = Tensor(self) @ Tensor(t)
+        # if isinstance(t, Vector):
+        #     return Vector(result)
+        # if isinstance(t, Matrix):
+        #     return Matrix(result)
+        # return Vector(result) if ndim(result) <= 1 else Matrix(result)
 
-    def __rmatmaul__(self, t):
-        from .vector import Vector
-        result = Tensor(t) @ Tensor(self)
-        if isinstance(t, Vector):
-            return Vector(result)
-        return Matrix(result)
+    # def __rmatmaul__(self, t):
+    #     from .vector import Vector
+    #     result = Tensor(t) @ Tensor(self)
+    #     if isinstance(t, Vector):
+    #         return Vector(result)
+    #     return Matrix(result)
 
     # TODO improve impl of following methods
 

@@ -1,4 +1,4 @@
-from doufo import PureFunction, func
+from doufo import PureFunction, func, singledispatch
 
 
 def test_currying():
@@ -31,3 +31,18 @@ def test_bind():
         return a * 2
 
     assert (foo >> bar)(3) == 8
+
+
+def test_singledispatch():
+    @singledispatch
+    def goo(a, b):
+        return a + b
+
+    @goo.register(int)
+    def _(a, b):
+        return a + 2 * b
+
+    assert goo(1)(2) == 5
+    assert goo(1, 2) == 5
+    assert goo('1')('2') == '12'
+    assert goo('1', '2') == '12'

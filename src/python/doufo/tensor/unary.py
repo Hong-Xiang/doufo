@@ -1,16 +1,60 @@
-from functools import singledispatch
-from dxl.data.tensor import Tensor
 import numpy as np
+import tensorflow as tf
+from doufo import List, singledispatch
+from doufo.utils import method_not_support_msg
 
-__all__ = ['abs_', 'unit', 'as_scalar']
+__all__ = ['shape', 'ndim', 'size', 'abs_', 'unit',
+           'as_scalar', 'square', 'argmax']
+
+
+@singledispatch
+def shape(t) -> List[int]:
+    raise TypeError(method_not_support_msg(shape, t))
+
+
+@shape.register(np.ndarray)
+def _(t) -> List[int]:
+    return List(t.shape)
+
+
+@shape.register(tf.Tensor)
+def _(t) -> List[int]:
+    return List(t.shape.as_list())
+
+
+@singledispatch
+def ndim(t) -> int:
+    raise TypeError(method_not_support_msg(ndim, t))
+
+
+@ndim.register(np.ndarray)
+def _(t) -> List[int]:
+    return t.ndim
+
+
+@singledispatch
+def size(t) -> int:
+    raise TypeError(method_not_support_msg(size, t))
+
+
+@size.register(np.ndarray)
+def _(t) -> List[int]:
+    return t.size
+
+
+@singledispatch
+def argmax(t):
+    raise TypeError(method_not_support_msg(argmax, t))
+
+
+@argmax.register(np.ndarray)
+def _(t):
+    return np.argmax(t)
 
 
 @singledispatch
 def abs_(t):
     raise TypeError()
-
-
-
 
 
 @abs_.register(np.ndarray)
