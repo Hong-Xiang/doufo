@@ -25,6 +25,8 @@ class DataList(List[T]):
 
     def fmap(self, f):
         result = [f(x) for x in self.unbox()]
+        if len(result) == 0:
+            return DataList([], None)
         return DataList(result, type(result))
 
     def filter(self, f):
