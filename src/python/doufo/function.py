@@ -1,5 +1,6 @@
 from doufo import Monad
 from functools import partial, wraps
+import functools
 import inspect
 from typing import Callable, Union, Generic, cast, Any
 
@@ -43,6 +44,22 @@ class PureFunction(Callable[[A], B], Monad[Callable[[A], B]]):
     # def apply(self, x):
         # return PureFunction(partial(self.__call__, x))
 
+# FIXME convinient singledispatch function
+
+class SingleDispatchFunction(PureFunction):
+    def __init__(self, f):
+        def helper(*args, **kwargs):
+            return f(*args, **kwargs)
+        super().__init__(func(f))
+        f = functools.singledispatch(f)
+        self.kernel = f
+
+    def register(self, *args, **kwargs):
+        return self.kernel.register(*args, **kwargs)
+
+
+def singledispatch(f):
+    return SingleDispatchFunction(f)
 
 def func(f: Callable) -> PureFunction:
     return cast(PureFunction, wraps(f)(PureFunction(f)))
