@@ -52,9 +52,15 @@ class SingleDispatchFunction(PureFunction):
 
 
 def singledispatch(f):
+    """
+    decorate of both functools.singledispatch and func
+    """
     return SingleDispatchFunction(f)
 
 def func(f: Callable) -> PureFunction:
+    """
+    decorate normal function to PureFunction, for currying, @composite, fmap, etc.
+    """
     return cast(PureFunction, wraps(f)(PureFunction(f)))
 
 
@@ -63,6 +69,9 @@ identity: PureFunction[A, A] = func(lambda x: x)
 
 @func
 def flip(f: Callable[[A], B]) -> PureFunction[B, A]:
+    """
+    flip order of first two arguments to function.
+    """
     @wraps(f)
     def inner(*args, **kwargs):
         return f(args[1], args[0], *args[2:], **kwargs)
