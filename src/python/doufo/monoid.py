@@ -11,7 +11,7 @@ T = TypeVar('T')
 
 class Monoid(Generic[T]):
     @abstractclassmethod
-    def empty(self) -> 'Monoid[T]':
+    def empty(cls) -> 'Monoid[T]':
         pass
 
     @abstractmethod

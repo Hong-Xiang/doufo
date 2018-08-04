@@ -13,7 +13,7 @@ from .unary_with_args import *
 from doufo.tensor import (to_tensor_like, as_scalar,
                           is_scalar, shape, ndim, as_scalar, sum_)
 
-T = TypeVar('TensorLike')
+T = TypeVar('T') # TensorLike
 
 
 class Tensor(Functor[T]):
@@ -101,7 +101,7 @@ class Tensor(Functor[T]):
     def __floordiv__(self, t):
         return self.fmap(lambda d: d // t)
 
-    def __floordiv__(self, t):
+    def __rfloordiv__(self, t):
         return self.fmap(lambda d: t // d)
 
     def __mod__(self, t):

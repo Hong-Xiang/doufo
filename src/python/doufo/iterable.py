@@ -1,20 +1,23 @@
-from typing import Iterable, Callable, Optional
+from typing import Iterable, Callable, Optional, TypeVar
 from .control import Functor
+from .monoid import Monoid
 from .function import identity
 import itertools
 from .on_collections import take_
 
 __all__ = ['PureIterable', 'IterableElemMap', 'IterableIterMap', 'Count']
 
+T = TypeVar('T')
 
-class PureIterable(Iterable, Functor[Iterable]):
+
+class PureIterable(Iterable[T], Functor[Iterable[T]], Monoid[Iterable[T]]):
     """
     Only iterable, iterator is not PureIterable
     """
 
 
-class IterableElemMap(PureIterable):
-    def __init__(self, source: PureIterable, opeartion=Optional[Callable]):
+class IterableElemMap(PureIterable[T]):
+    def __init__(self, source: PureIterable[T], opeartion=Optional[Callable]):
         self.source = source
         if opeartion is None:
             opeartion = identity
@@ -29,10 +32,19 @@ class IterableElemMap(PureIterable):
     def unbox(self):
         return iter(self)
 
+    @classmethod
+    def empty(cls):
+        return IterableElemMap(tuple())
+
+    def extend(self, xs: PureIterable[T]):
+        return IterableElemMap(IterableIterMap(self).extend(xs))
+
 
 class IterableIterMap(PureIterable):
     def __init__(self, source: PureIterable, opeartion=Optional[Callable]):
         self.source = source
+        if opeartion is None:
+            opeartion = identity
         self.opeartion = opeartion
 
     def fmap(self, f):
@@ -43,6 +55,13 @@ class IterableIterMap(PureIterable):
 
     def unbox(self):
         return iter(self)
+
+    def extend(self, xs: PureIterable[T]):
+        return self.fmap(lambda s: itertools.chain(s, xs))
+
+    @classmethod
+    def empty(cls):
+        return IterableIterMap(tuple())
 
 
 class Count(PureIterable):
@@ -55,5 +74,5 @@ class Count(PureIterable):
 
 
 @take_.register(Iterable)
-def _(xs:Iterable, n:int)->Iterable:
+def _(xs: Iterable, n: int)->Iterable:
     return IterableIterMap(xs, itertools.islice(0, n))

@@ -1,8 +1,9 @@
 import collections.abc
 from typing import Sequence, TypeVar
 import numpy as np
-from doufo import Functor, Monad,List, IterableElemMap, IterableIterMap
+from doufo import Functor, Monad,List, IterableElemMap, IterableIterMap, Monoid, identity
 from functools import partial
+
 __all__ = ['DataList', 'DataArray', 'DataIterable']
 
 
@@ -42,9 +43,9 @@ class DataArray(Sequence[T], Functor[T]):
     def fmap(self, f):
         result = self.unbox()
         return DataArray(type(result), f(result))
-
+    
     def __len__(self):
-        return self.data.shape[0]
+        return self.unbox().shape[0]
 
     def filter(self, f):
         result = self.data[f(self.unbox())]
@@ -61,6 +62,17 @@ class DataArray(Sequence[T], Functor[T]):
 
     def __repr__(self):
         return f"<DataArray({self.dataclass}, {self.unbox()})>"
+
+    def extend(self, xs:'DataArray[T]') -> 'DataArray[T]':
+        if len(xs) == 0:
+            return self
+        if len(self) == 0:
+            return xs
+        return self.fmap(lambda d: np.concatenate([d, xs.unbox()]))
+    
+    @classmethod
+    def empty(cls):
+        return DataArray(np.array([]), None, identity)
 
 
 
