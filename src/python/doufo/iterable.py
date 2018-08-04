@@ -17,6 +17,10 @@ class PureIterable(Iterable[T], Functor[Iterable[T]], Monoid[Iterable[T]]):
 
 
 class IterableElemMap(PureIterable[T]):
+    """
+    Iterable Functor, fmap functon on elements of iterable.
+    Useful for chaning data.
+    """
     def __init__(self, source: PureIterable[T], opeartion=Optional[Callable]):
         self.source = source
         if opeartion is None:
@@ -41,6 +45,10 @@ class IterableElemMap(PureIterable[T]):
 
 
 class IterableIterMap(PureIterable):
+    """
+    Iterable Functor, fmap on iterable itself, useful for concatnating, 
+    filtering, etc.
+    """
     def __init__(self, source: PureIterable, opeartion=Optional[Callable]):
         self.source = source
         if opeartion is None:
