@@ -1,5 +1,5 @@
 from functools import singledispatch
-from typing import Iterable, TypeVar, List, Union, TYPE_CHECKING, Tuple, Optional
+from typing import Iterable, TypeVar, List, Union, TYPE_CHECKING, Tuple, Optional, Sequence, Any
 from .function import func
 import collections.abc
 import itertools
@@ -63,4 +63,4 @@ def flatten(x: Iterable[T]) -> Iterable[T]:
 
 @flatten.register(tuple)
 def _(xs: Tuple[Union[T, Any]]) -> Tuple[T]:
-    return tuple([flatten(x) for x inn xs])
+    return tuple([flatten(x) for x in xs])

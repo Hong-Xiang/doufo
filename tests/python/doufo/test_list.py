@@ -1,4 +1,6 @@
 from doufo import List
+from doufo import head
+
 
 def test_eq():
     assert List([1, 2]) == [1, 2]
@@ -44,3 +46,7 @@ def test_getitem_slice_value():
 
 def test_getitem_slice_class():
     assert isinstance(List([1, 2, 3])[:2], List)
+
+
+def test_head():
+    assert head(List([1, 2])) == 1
