@@ -9,11 +9,13 @@ DEFAULT_CONSTRUCTOR = np.array
 __all__ = ['to_tensor_like']
 
 
-@singledispatch
 @func
 def to_tensor_like(t):
-    return DEFAULT_CONSTRUCTOR(t)
+    return _to_tensor_like(t)
 
+@singledispatch
+def _to_tensor_like(t):
+    return DEFAULT_CONSTRUCTOR(t)
 
 @to_tensor_like.register(np.ndarray)
 @to_tensor_like.register(tf.Tensor)
