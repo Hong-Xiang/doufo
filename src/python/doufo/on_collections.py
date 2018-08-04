@@ -3,7 +3,7 @@ from doufo import func, singledispatch
 import collections.abc
 import itertools
 
-__all__ = ['take', 'head', 'concat', 'fzip']
+__all__ = ['take', 'head', 'concat', 'fzip', 'tail']
 
 T = TypeVar('T')
 
@@ -34,11 +34,11 @@ def head_(xs: Iterable[T]):
 
 @singledispatch
 def tail(xs: Iterable[T]):
-    pass
+    raise NotImplementedError()
 
-@tail.register(Sequence[T])
+@tail.register(collections.abc.Sequence)
 def _(xs:Sequence[T]) -> Sequence[T]:
-    return x[1:]
+    return xs[1:]
 
 @singledispatch
 def concat(xss: Sequence[Iterable[T]], acc: Optional[Iterable[T]]=None) -> Iterable[T]:

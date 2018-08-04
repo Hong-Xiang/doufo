@@ -5,7 +5,6 @@ e.g. List([1,2]).fmap(x + 1)
 """
 from doufo import PureFunction, identity, Functor, FunctorArithmeticMixin
 import operator
-from functools import partial
 
 __all__ = ['QuickLambda', 'x']
 
