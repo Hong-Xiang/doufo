@@ -1,7 +1,5 @@
-from functools import singledispatch
+from doufo import singledispatch
 import numpy as np
-from functools import singledispatch
-from dxl.data.tensor import Tensor
 
 __all__ = ['sum_', 'norm', 'is_scalar']
 
@@ -16,29 +14,13 @@ def _(t):
     return np.sum(t)
 
 
-@sum_.register(Tensor)
-def _(t):
-    return sum_(t.join())
-
 
 @singledispatch
 def norm(t, *, p=2.0):
     return np.linalg.norm(t)
 
 
-@norm.register(np.ndarray)
-def _(t, *, p=2.0):
-    return np.linalg.norm(t)
 
-
-@norm.register(Tensor)
-def _(t, *, p=2.0):
-    return norm(t.join())
-
-
-@norm.register(list)
-def _(t, *, p=2.0):
-    return norm(np.array(t))
 
 
 @singledispatch
@@ -61,6 +43,4 @@ def _(t):
     return np.isscalar(t)
 
 
-@is_scalar.register(Tensor)
-def _(t):
-    return is_scalar(t.join())
+

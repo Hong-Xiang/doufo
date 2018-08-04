@@ -1,4 +1,8 @@
-from .tensor import Tensor, T
+from .tensor import Tensor
+from typing import TypeVar
+from .binary import matmul
+
+T = TypeVar('T')
 
 __all__ = ['Vector', 'project']
 
@@ -13,6 +17,7 @@ class Vector(Tensor[T]):
         return Vector(f(self.data))
 
     def __matmul__(self, t):
+        return matmul(self, t)
         from .matrix import Matrix
         from dxl.function.tensor import transpose
         # HACK for v @ t.T
