@@ -44,7 +44,7 @@ def vec_vec(x, y):
     return x.unbox() @ y.unbox()
 
 def vec_mat(x, y):
-    return Matrix(x.unbox() @ y.unbox())
+    return Vector(x.unbox() @ y.unbox())
 
 def mat_vec(x, y):
     return Vector(x.unbox() @ y.unbox())

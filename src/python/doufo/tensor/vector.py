@@ -16,18 +16,18 @@ class Vector(Tensor[T]):
     def fmap(self, f):
         return Vector(f(self.data))
 
-    def __matmul__(self, t):
-        return matmul(self, t)
-        from .matrix import Matrix
-        from dxl.function.tensor import transpose
-        # HACK for v @ t.T
-        if len(t.shape) == 2 and t.shape[0] == 1 and t.shape[1] == self.size:
-            return self @ transpose(t)
-        return scalar_or_vector_of(Tensor(self) @ Tensor(t), t)
+    # def __matmul__(self, t):
+    #     return matmul(self, t)
+    #     from .matrix import Matrix
+    #     from dxl.function.tensor import transpose
+    #     # HACK for v @ t.T
+    #     if len(t.shape) == 2 and t.shape[0] == 1 and t.shape[1] == self.size:
+    #         return self @ transpose(t)
+    #     return scalar_or_vector_of(Tensor(self) @ Tensor(t), t)
 
-    def __rmatmul__(self, t):
-        from .matrix import Matrix
-        return scalar_or_vector_of(Tensor(t) @ Tensor(self), t)
+    # def __rmatmul__(self, t):
+    #     from .matrix import Matrix
+    #     return scalar_or_vector_of(Tensor(t) @ Tensor(self), t)
 
     @property
     def x(self):
