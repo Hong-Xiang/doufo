@@ -98,11 +98,19 @@ def dtype_of(dataclass_type):
 
 
 def dtype_kernel(dataclass_type, root):
-    return concat([dtype_kernel(v.type if isinstance(dataclass_type, type)
-                                else getattr(dataclass_type, k),
-                                root+k+'/')
-                   if issubclass(v.type, DataClass) else [(root+k, v.type)]
-                   for k, v in dataclass_type.fields().items()], None)
+    return concat([dtype_parse_item(k, v, root+k, dataclass_type)
+                   for k, v in dataclass_type.fields().items()],
+                  None)
+
+
+def dtype_parse_item(k, v, name, dataclass_type):
+    if not issubclass(v.type, DataClass):
+        return [(name, v.type)]
+    if isinstance(dataclass_type, type):
+        to_parse = v.type
+    else:
+        to_parse = getattr(dataclass_type, k)
+    return dtype_kernel(to_parse, name+'/')
 
 
 def list_of_dataclass_to_numpy_structure_of_array(datas):
