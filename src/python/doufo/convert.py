@@ -1,11 +1,36 @@
-from .function import PureFunction
+from .function import func
+from functools import wraps, cmp_to_key
 
-class ConvertersDict(PureFunction):
+
+class ConvertersDict:
     def __init__(self):
         self.converters = {}
 
     def sorted_converters_keys(self):
-        pass
+        keys = sorted(self.converters.keys(),
+                      key=cmp_to_key(tuple_type_compare))
+        return {k: self.converters[k] for k in keys}
+
+    def register(self, src, tar):
+        def deco(f):
+            self.converters[(src, tar)] = f
+            self.converters = self.sorted_converters_keys()
+            return f
+        return deco
+
+    def __call__(self, obj):
+        return ConvertNeedTarget(obj, self)
+
+    def convert(self, t0, t1):
+        return self.converters[(t0, t1)]
+
+
+converters = ConvertersDict()
+
+
+@func
+def convert_to(o, target_type):
+    return converters.convert(type(o), target_type)(o)
 
 
 def tuple_type_compare(types0, types1):

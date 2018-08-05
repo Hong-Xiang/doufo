@@ -1,4 +1,4 @@
-from doufo.convert import tuple_type_compare, single_type_compare
+from doufo.convert import tuple_type_compare, single_type_compare, ConvertersDict
 import pytest
 
 
@@ -34,3 +34,13 @@ def test_tuple_type_comprae(t0, t1, expect):
 ])
 def test_single_type_compare(t0, t1, expect):
     assert single_type_compare(t0, t1) == expect
+
+
+def test_converters_dict():
+    cvt = ConvertersDict()
+
+    @cvt.register(list, tuple)
+    def foo(a):
+        return tuple(a + [3])
+
+    assert cvt.convert(list, tuple)([1, 2]) == (1, 2, 3)
