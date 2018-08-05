@@ -1,7 +1,7 @@
 import collections.abc
 from typing import Sequence, TypeVar
 import numpy as np
-from doufo import Functor, Monad, List, IterableElemMap, IterableIterMap, Monoid, identity, head, concat, DataClass
+from doufo import Functor, Monad, List, IterableElemMap, IterableIterMap, Monoid, identity, head, concat, DataClass, flatten
 from functools import partial
 
 __all__ = ['DataList', 'DataArray', 'DataIterable']
@@ -98,13 +98,15 @@ def dtype_of(dataclass_type):
 
 
 def dtype_kernel(dataclass_type, root):
-    return concat([dtype_kernel(v.type, root+k+'/')
+    return concat([dtype_kernel(v.type if isinstance(dataclass_type, type)
+                                else getattr(dataclass_type, k),
+                                root+k+'/')
                    if issubclass(v.type, DataClass) else [(root+k, v.type)]
                    for k, v in dataclass_type.fields().items()], None)
 
 
 def list_of_dataclass_to_numpy_structure_of_array(datas):
-    return np.rec.array(list(datas.fmap(lambda c: c.as_tuple())),
+    return np.rec.array(list(datas.fmap(lambda c: flatten(c.as_nested_tuple()))),
                         dtype_of(datas[0]))
 
 

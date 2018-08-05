@@ -41,3 +41,27 @@ def test_dtype_kernel_nested():
         snd: Point
     assert dtype_kernel(Event, '') == [('fst/x', float), ('fst/y', float),
                                        ('snd/x', float), ('snd/y', float)]
+
+
+def test_dtype_kernel_nested_abstract():
+    @dataclass
+    class Point:
+        pass
+
+    @dataclass
+    class PointC:
+        x: float
+        y: float
+
+    @dataclass
+    class PointR:
+        r: float
+        t: float
+
+    @dataclass
+    class Event(Pair):
+        fst: Point
+        snd: Point
+    e = Event(PointC(0.0, 1.0), PointR(1.0, 3.0))
+    assert dtype_kernel(e, '') == [('fst/x', float), ('fst/y', float),
+                                   ('snd/r', float), ('snd/t', float)]
