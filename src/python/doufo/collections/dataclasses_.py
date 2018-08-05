@@ -1,7 +1,7 @@
 import collections.abc
 from typing import Sequence, TypeVar
 import numpy as np
-from doufo import Functor, Monad,List, IterableElemMap, IterableIterMap, Monoid, identity, head
+from doufo import Functor, Monad, List, IterableElemMap, IterableIterMap, Monoid, identity, head, concat, DataClass
 from functools import partial
 
 __all__ = ['DataList', 'DataArray', 'DataIterable']
@@ -12,8 +12,6 @@ def batched(f):
 
 
 T = TypeVar('T')
-
-
 
 
 class DataList(List[T]):
@@ -45,7 +43,7 @@ class DataArray(Sequence[T], Functor[T]):
     def fmap(self, f):
         result = self.unbox()
         return DataArray(type(result), f(result))
-    
+
     def __len__(self):
         return self.unbox().shape[0]
 
@@ -65,18 +63,16 @@ class DataArray(Sequence[T], Functor[T]):
     def __repr__(self):
         return f"<DataArray({self.dataclass}, {self.unbox()})>"
 
-    def extend(self, xs:'DataArray[T]') -> 'DataArray[T]':
+    def extend(self, xs: 'DataArray[T]') -> 'DataArray[T]':
         if len(xs) == 0:
             return self
         if len(self) == 0:
             return xs
         return self.fmap(lambda d: np.concatenate([d, xs.unbox()]))
-    
+
     @classmethod
     def empty(cls):
         return DataArray(np.array([]), None, identity)
-
-
 
 
 class DataIterable(IterableElemMap):
@@ -93,13 +89,24 @@ class DataIterable(IterableElemMap):
     def filter(self, f):
         return DataIterable(super().filter(f), self.dataclass)
 
+
 __all__ += ['list_of_dataclass_to_numpy_structure_of_array']
 
-def dtype_of(dataclass_type):
-    return np.dtype([(k, v.type) for k, v in dataclass_type.fields().items()], align=True)
 
-def list_of_dataclass_to_numpy_structure_of_array(datas,):
-    return np.rec.array(list(datas.fmap(lambda c: c.as_tuple())), dtype_of(datas[0]))
+def dtype_of(dataclass_type):
+    return np.dtype(dtype_kernel(dataclass_type, ''), align=True)
+
+
+def dtype_kernel(dataclass_type, root):
+    return concat([dtype_kernel(v.type, root+k+'/')
+                   if issubclass(v.type, DataClass) else [(root+k, v.type)]
+                   for k, v in dataclass_type.fields().items()], None)
+
+
+def list_of_dataclass_to_numpy_structure_of_array(datas):
+    return np.rec.array(list(datas.fmap(lambda c: c.as_tuple())),
+                        dtype_of(datas[0]))
+
 
 def numpy_structure_of_array_to_dataclass(data, dataclass):
     return dataclass(*(data[k] for k in dataclass.fields()))
