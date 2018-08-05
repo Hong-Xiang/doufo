@@ -1,7 +1,7 @@
 import collections.abc
 from typing import Sequence, TypeVar
 import numpy as np
-from doufo import Functor, Monad,List, IterableElemMap, IterableIterMap, Monoid, identity
+from doufo import Functor, Monad,List, IterableElemMap, IterableIterMap, Monoid, identity, head
 from functools import partial
 
 __all__ = ['DataList', 'DataArray', 'DataIterable']
@@ -81,22 +81,17 @@ class DataArray(Sequence[T], Functor[T]):
 
 class DataIterable(IterableElemMap):
     def __init__(self, data, dataclass=None):
-        from dxl.function import head
-        self.data = data
+        super().__init__(data)
         if dataclass is None:
             dataclass = type(head(data))
         self.dataclass = dataclass
 
-    def unbox(self):
-        return self.data
-
     def fmap(self, f):
-        from dxl.function import head
-        result = f(head(self.join()))
-        return DataIterable(self.data.fmap(f), type(result))
+        result = f(head(self.unbox()))
+        return DataIterable(self, type(result), f)
 
     def filter(self, f):
-        return DataIterable(IterableIterMap(self, partial(filter, f)))
+        return DataIterable(super().filter(f), self.dataclass)
 
 __all__ += ['list_of_dataclass_to_numpy_structure_of_array']
 
