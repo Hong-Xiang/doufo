@@ -57,7 +57,7 @@ class DataArray(Sequence[T], Functor[T]):
         if isinstance(s, int):
             return self.unbox()[s]
         else:
-            return self.fmap(lambda d: d[s])
+            return DataArray(self.data[s], self.dataclass)
 
     def unbox(self):
         return self.constructor(self.data.view(np.recarray), self.dataclass)
