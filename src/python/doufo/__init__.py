@@ -11,3 +11,4 @@ from .on_collections import *
 from ._dataclass import *
 from .pair import Pair
 from .qlambda import *
+from .convert import *

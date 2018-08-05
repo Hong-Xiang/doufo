@@ -1,7 +1,9 @@
 import collections.abc
 from typing import Sequence, TypeVar
 import numpy as np
-from doufo import Functor, Monad, List, IterableElemMap, IterableIterMap, Monoid, identity, head, concat, DataClass, flatten
+from doufo import (Functor, Monad, List, IterableElemMap, IterableIterMap,
+                   Monoid, identity, head, concat, DataClass, flatten,
+                   converters, convert_to)
 from functools import partial
 
 __all__ = ['DataList', 'DataArray', 'DataIterable']
@@ -113,6 +115,7 @@ def dtype_parse_item(k, v, name, dataclass_type):
     return dtype_kernel(to_parse, name+'/')
 
 
+@converters.register(DataList, DataArray)
 def list_of_dataclass_to_numpy_structure_of_array(datas):
     return np.rec.array(list(datas.fmap(lambda c: flatten(c.as_nested_tuple()))),
                         dtype_of(datas[0]))

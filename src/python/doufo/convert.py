@@ -1,6 +1,7 @@
 from .function import func
 from functools import wraps, cmp_to_key
 
+__all__ = ['converters', 'convert_to']
 
 class ConvertersDict:
     def __init__(self):
