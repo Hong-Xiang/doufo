@@ -18,3 +18,4 @@ def test_aos_soa_campat():
     soa.filter(lambda c: c.a >= 3)
     soa.fmap(lambda c: c.a)
     soa.fmap(lambda c: replace(c, a=c.a + 1))
+
