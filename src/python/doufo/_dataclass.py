@@ -18,6 +18,11 @@ class DataClass:
     def as_tuple(self):
         return attr.astuple(self)
 
+    def as_nested_tuple(self):
+        result = self.as_tuple()
+        return tuple([x.as_nested_tuple() if isinstance(x, DataClass) else x
+                      for x in result])
+
 
 def dataclass(cls):
     base = attr.s(frozen=True, auto_attribs=True, slots=True)(cls)

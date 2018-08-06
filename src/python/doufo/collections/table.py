@@ -1,14 +1,25 @@
 from typing import Generic, TypeVar, NamedTuple, Sequence, Union, Iterator
 from abc import ABCMeta, abstractproperty, abstractmethod
 from doufo import Functor, Monoid
+from .dataclasses_ import DataArray
+from doufo import List
 
 T = TypeVar('T')
 
 # TODO add implementation
 
-class Table(Sequence[T], Functor[T], Monoid[T]):
+
+class Table(Functor[T], Monoid[T]):
     """
     An unified table access of PyTable/pandas, etc.
+    Similar to DataArray, but with following differencies:
+
+    - Prefer lazy, thus before "compute methods" like __getitem__,
+    do not perform actual calculation.
+
+    - DataClass infer, automatically create dataclass(optional), 
+    if loaded from filesystem.
+
 
     t[0]: 0-th row
     t[0:5] -> Table: [0:5] rows.
@@ -16,28 +27,24 @@ class Table(Sequence[T], Functor[T], Monoid[T]):
     __iter__(self): row iterator
 
     fmap :: Table -> Table
-
     """
+    def __init__(self, source, operations, dataclass=None):
+        self.source = source
+        self.dataclass = dataclass
+    
+    def __getitem__(self, i) -> Union[T, Sequence[T]]:
+        return self.unbox()[i]
 
-    def __getitem__(self, i, columns=None) -> Union[T, Table[T]] :
-        if isinstance(i, int):
-            return self.at_row(i)
-        if isinstance(i, slice):
-            return self.slice_row(i) 
-
-    @abstractmethod
     def __iter__(self) -> Iterator[T]:
-        pass
+        return iter(self.unbox())
 
-    @abstractmethod
-    def at_row(self, i: int) -> T:
-        pass
+    @classmethod
+    def empty(cls):
+        return cls([])
     
-    @abstractmethod
-    def slice_row(self, s: slice) -> Table[T]:
-        pass
-
-    @abstractproperty
-    def nb_rows(self) -> int:
-        pass
+    def extend(self, tb):
+        raise NotImplementedError
+        # return Table([self.unbox(), tb], self.dataclass)
     
+    def unbox(self):
+        return self.source 

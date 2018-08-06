@@ -4,6 +4,7 @@ from .monoid import Monoid
 from .function import identity
 import itertools
 from .on_collections import take_
+from functools import partial
 
 __all__ = ['PureIterable', 'IterableElemMap', 'IterableIterMap', 'Count']
 
@@ -43,6 +44,8 @@ class IterableElemMap(PureIterable[T]):
     def extend(self, xs: PureIterable[T]):
         return IterableElemMap(IterableIterMap(self).extend(xs))
 
+    def filter(self, f):
+        return IterableElemMap(IterableIterMap(self).filter(f))
 
 class IterableIterMap(PureIterable):
     """
@@ -66,6 +69,9 @@ class IterableIterMap(PureIterable):
 
     def extend(self, xs: PureIterable[T]):
         return self.fmap(lambda s: itertools.chain(s, xs))
+
+    def filter(self, f):
+        return self.fmap(partial(filter, f))
 
     @classmethod
     def empty(cls):
