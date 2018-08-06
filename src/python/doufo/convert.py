@@ -1,3 +1,8 @@
+"""
+
+"""
+
+
 from .function import func
 from functools import wraps, cmp_to_key
 

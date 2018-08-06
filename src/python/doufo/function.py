@@ -1,3 +1,10 @@
+"""
+PureFunction represents a pure function.
+PureFunction is also a functor that can map function f on its function self
+to generate a new function. Thus, a series of functions can be composited by 
+generating new PureFunction instance and finally get a complex function.
+"""
+
 from doufo import Monad
 from functools import partial, wraps
 import functools

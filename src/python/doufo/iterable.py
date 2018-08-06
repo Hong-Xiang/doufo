@@ -1,3 +1,7 @@
+"""
+
+"""
+
 from typing import Iterable, Callable, Optional, TypeVar
 from .control import Functor
 from .monoid import Monoid

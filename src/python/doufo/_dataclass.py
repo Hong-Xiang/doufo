@@ -1,3 +1,10 @@
+"""
+DataClass define a base class for the types which have many fields.
+These fields can be easily replaced by new values to create new instance.
+
+"""
+
+
 import attr
 import types
 
