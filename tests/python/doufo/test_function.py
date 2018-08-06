@@ -1,4 +1,5 @@
 from doufo import PureFunction, func, singledispatch
+from doufo.function import guess_nargs
 
 
 def test_currying():
@@ -46,3 +47,15 @@ def test_singledispatch():
     assert goo(1, 2) == 5
     assert goo('1')('2') == '12'
     assert goo('1', '2') == '12'
+
+
+def test_guess_nargs():
+    def foo(a, b):
+        pass
+    assert guess_nargs(foo) == 2
+
+
+def test_guess_nargs_with_defaults():
+    def foo(a, b=1):
+        pass
+    assert guess_nargs(foo) == 1
