@@ -46,7 +46,8 @@ class DataArray(Sequence[T], Functor[T]):
         result = f(self.unbox())
         if isinstance(result, DataClass):
             return DataArray(result, type(result))
-        return result
+        from doufo.tensor import Tensor
+        return Tensor(result)
 
     def __len__(self):
         # return self.unbox().shape[0]
