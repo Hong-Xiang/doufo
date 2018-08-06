@@ -15,7 +15,7 @@ class Monoid(Generic[T]):
     e.g. the addition of lists. ([1,2] + [3,4]) + [5,6] = [1,2] + ([3,4] + [5,6])
     '''
     @abstractclassmethod
-    def empty(self) -> 'Monoid[T]':
+    def empty(cls) -> 'Monoid[T]':
         pass
 
     @abstractmethod

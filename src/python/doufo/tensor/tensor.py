@@ -5,6 +5,7 @@ import numpy as np
 from typing import TypeVar
 import functools
 import operator
+from doufo import FunctorArithmeticMixin
 from .binary import *
 from .unary import *
 from .unary_reduce import *
@@ -13,10 +14,10 @@ from .unary_with_args import *
 from doufo.tensor import (to_tensor_like, as_scalar,
                           is_scalar, shape, ndim, as_scalar, sum_)
 
-T = TypeVar('TensorLike')
+T = TypeVar('T') # TensorLike
 
 
-class Tensor(Functor[T]):
+class Tensor(Functor[T], FunctorArithmeticMixin):
     # HACK for radd to work
     __array_priority__ = 16
 
@@ -59,18 +60,6 @@ class Tensor(Functor[T]):
     def fmap(self, f):
         return Tensor(f(self.unbox()))
 
-    def __eq__(self, t):
-        return self.fmap(lambda d: d == t)
-
-    def __req__(self, t):
-        return self.fmap(lambda d: t == d)
-
-    def __mul__(self, t):
-        return self.fmap(lambda d: d * t)
-
-    def __rmul__(self, t):
-        return self.fmap(lambda d: t * d)
-
     def __matmul__(self, t):
         return matmul(self , t)
 
@@ -79,39 +68,6 @@ class Tensor(Functor[T]):
 
     def __len__(self):
         return len(self.unbox())
-
-    def __add__(self, t):
-        return self.fmap(lambda d: d + t)
-
-    def __radd__(self, t):
-        return self.fmap(lambda d: t + d)
-
-    def __sub__(self, t):
-        return self.fmap(lambda d: d - t)
-
-    def __rsub__(self, t):
-        return self.fmap(lambda d: t - d)
-
-    def __truediv__(self, t):
-        return self.fmap(lambda d: d / t)
-
-    def __rtruediv__(self, t):
-        return self.fmap(lambda d: t / d)
-
-    def __floordiv__(self, t):
-        return self.fmap(lambda d: d // t)
-
-    def __floordiv__(self, t):
-        return self.fmap(lambda d: t // d)
-
-    def __mod__(self, t):
-        return self.fmap(lambda d: d % t)
-
-    def __rmod__(self, t):
-        return self.fmap(lambda d: t % d)
-
-    def __neg__(self):
-        return self.fmap(lambda d: -d)
 
     def __repr__(self):
         return repr(self.unbox())

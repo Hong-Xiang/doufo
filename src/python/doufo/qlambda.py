@@ -1,24 +1,28 @@
-from doufo import PureFunction, identity
+"""
+Quick lambda creator, useful for use in fmap, filter, etc.
+
+e.g. List([1,2]).fmap(x + 1)
+"""
+from doufo import PureFunction, identity, Functor, FunctorArithmeticMixin
+import operator
 
 __all__ = ['QuickLambda', 'x']
 
 
-class QuickLambda(PureFunction):
+class QuickLambda(PureFunction, FunctorArithmeticMixin):
+    """
+    QuickLambda constructor.
+    """
 
-    def __eq__(self, v):
-        return QuickLambda(lambda x: self.__call__(x) == v)
+    def fmap(self, f):
+        return QuickLambda(lambda x: f(self.__call__(x)))
+
 
     def __getattr__(self, *args, **kwargs):
-        return QuickLambda(lambda x: getattr(self.__call__(x), *args, **kwargs))
+        return self.fmap(operator.attrgetter(*args, **kwargs))
 
     def __getitem__(self, *args, **kwargs):
-        return QuickLambda(lambda x: self.__call__(x).__getitem__(*args, **kwargs))
-
-    def __add__(self, v):
-        return QuickLambda(lambda x: self.__call__(x) + v)
-
-    def __sub__(self, v):
-        return QuickLambda(lambda x: self.__call__(x) - v)
+        return self.fmap(operator.itemgetter(*args, **kwargs))
 
     def __hash__(self):
         return hash(id(self))
