@@ -1,5 +1,5 @@
 import numpy as np
-from doufo.tensor import matmul, Matrix, Vector, Tensor, ndim
+from doufo.tensor import matmul, Matrix, Vector, Tensor, ndim, as_scalar
 
 __all__ = []
 
@@ -41,7 +41,7 @@ def unfied_type(t):
     return Tensor(t)
 
 def vec_vec(x, y):
-    return x.unbox() @ y.unbox()
+    return as_scalar(x.unbox() @ y.unbox())
 
 def vec_mat(x, y):
     return Vector(x.unbox() @ y.unbox())
