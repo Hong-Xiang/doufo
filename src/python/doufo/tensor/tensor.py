@@ -12,7 +12,7 @@ from .unary_reduce import *
 from .unary_with_args import *
 
 from doufo.tensor import (to_tensor_like, as_scalar,
-                          is_scalar, shape, ndim, as_scalar, sum_)
+                          is_scalar, shape, ndim, as_scalar, sum_, shape)
 
 T = TypeVar('T') # TensorLike
 
@@ -83,15 +83,37 @@ def is_result_scalar(result, s):
         return True
     return False
 
+@square.register(Tensor)
+def _(t):
+    return t.fmap(square)
 
-__fmaped_funcs = [square, unit, abs_]
-__unboxed_funcs = [as_scalar, to_tensor_like, is_scalar, sum_, ndim]
+@unit.register(Tensor)
+def _(t):
+    return t.fmap(unit)
 
-for f in __fmaped_funcs:
-    f.register(Tensor)(lambda t: t.fmap(f))
+@abs_.register(Tensor)
+def _(t):
+    return t.fmap(abs_)
 
-for f in __unboxed_funcs:
-    f.register(Tensor)(lambda t: f(t.unbox()))
+@as_scalar.register(Tensor)
+def _(t):
+    return as_scalar(t.unbox())
+
+@to_tensor_like.register(Tensor)
+def _(t):
+    return to_tensor_like(t.unbox())
+
+@is_scalar.register(Tensor)
+def _(t):
+    return is_scalar(t.unbox())
+
+@sum_.register(Tensor)
+def _(t):
+    return sum_(t.unbox())
+
+@ndim.register(Tensor)
+def _(t):
+    return ndim(t.unbox())
 
 
 @transpose.register(Tensor)
@@ -106,3 +128,7 @@ def _(t, p=2.0):
 @all_close.register(Tensor)
 def _(x, y):
     return all_close(x.unbox(), Tensor(y).unbox())
+
+@shape.register(Tensor)
+def _(t):
+    return shape(t.unbox())

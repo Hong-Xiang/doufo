@@ -1,6 +1,7 @@
 from .tensor import Tensor
 from typing import TypeVar
 from .binary import matmul
+from doufo.tensor import as_scalar
 
 T = TypeVar('T')
 
@@ -14,7 +15,7 @@ class Vector(Tensor[T]):
         # raise ValueError(f"Vector must be 1 dimensional or scalar, got {self.ndim}.")
 
     def fmap(self, f):
-        return Vector(f(self.data))
+        return Vector(f(self.unbox()))
 
     # def __matmul__(self, t):
     #     return matmul(self, t)
@@ -53,7 +54,6 @@ class Vector(Tensor[T]):
 
 
 def scalar_or_vector_of(result, t):
-    from dxl.function.tensor import as_scalar
     return as_scalar(result) if is_result_scalar(t) else Vector(result)
 
 

@@ -63,7 +63,6 @@ class DataArray(Sequence[T], Functor[T]):
 
     def __getitem__(self, s):
         if isinstance(s, int):
-            # return self.dataclass(*self.data[s])
             return self.constructor(self.data[s].view(np.recarray), self.dataclass)
         else:
             return DataArray(self.data[s], self.dataclass)
