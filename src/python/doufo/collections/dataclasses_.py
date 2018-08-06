@@ -35,15 +35,18 @@ class DataList(List[T]):
 
 class DataArray(Sequence[T], Functor[T]):
     def __init__(self, data, dataclass, constructor=None):
-        self.data = data
+        self.data = maybe_fill(data, dataclass)
+        self.data = maybe_add_dtype(self.data, dataclass)
         self.dataclass = dataclass
         if constructor is None:
             constructor = numpy_structure_of_array_to_dataclass
         self.constructor = constructor
 
     def fmap(self, f):
-        result = self.unbox()
-        return DataArray(type(result), f(result))
+        result = f(self.unbox())
+        if isinstance(result, DataClass):
+            return DataArray(result, type(result))
+        return result
 
     def __len__(self):
         # return self.unbox().shape[0]
@@ -59,7 +62,8 @@ class DataArray(Sequence[T], Functor[T]):
 
     def __getitem__(self, s):
         if isinstance(s, int):
-            return self.dataclass(*self.data[s])
+            # return self.dataclass(*self.data[s])
+            return self.constructor(self.data[s].view(np.recarray), self.dataclass)
         else:
             return DataArray(self.data[s], self.dataclass)
 
@@ -108,6 +112,9 @@ def dtype_kernel(dataclass_type, root):
                    for k, v in dataclass_type.fields().items()],
                   None)
 
+def dtype_names(dataclass_type):
+    return dtype_of(dataclass_type).names
+
 
 def dtype_parse_item(k, v, name, dataclass_type):
     if not issubclass(v.type, DataClass):
@@ -124,28 +131,73 @@ def list_of_dataclass_to_numpy_structure_of_array(datas):
     return np.rec.array(list(datas.fmap(lambda c: flatten(c.as_nested_tuple()))),
                         dtype_of(datas[0]))
 
+# TODO rename numpy_structure_of_array_to_dataclass to numpy_array_to_data_class
+
 
 def numpy_structure_of_array_to_dataclass(data, dataclass):
-    if data.dtype.fields is None:
-        return from_normal_ndarray(data, dataclass)
-    else:
+    if isinstance(data, np.recarray):
         return from_numpy_structure_of_array(data, dataclass)
+    if (isinstance(data, np.ndarray)
+        and data.dtype.fields is None
+            and not isinstance(data, np.recarray)):
+        return from_normal_ndarray(data, dataclass)
+    return from_numpy_structure_of_array(data, dataclass)
 
 
 @converters.register(DataArray, DataList)
 def data_array_to_data_list(datas):
-    return DataList([x for x in datas])
+    return DataList([x for x in datas], datas.dataclass)
 
 
 def from_normal_ndarray(data, dataclass):
-    inputs = []
-    for i, v in enumerate(dataclass.fields()):
+    return dataclass(*make_data_columns(data, dataclass))
+
+
+def make_data_columns(data, dataclass):
+    result = []
+    for i, k in enumerate(dataclass.fields()):
         if i < data.shape[1]:
-            inputs.append(data[:,i])
+            result.append(data[:, i])
         else:
-            inputs.append(np.full([data.shape[0]]), v.default, v.type)
-    return dataclass(*inputs)
+            result.append(np.full([data.shape[0]],
+                                  dataclass.fields()[k].default,
+                                  dataclass.fields()[k].type))
+    return result
 
 
 def from_numpy_structure_of_array(data, dataclass):
     return dataclass(*(data[k] for k in dataclass.fields()))
+
+
+def maybe_fill(data, dataclass):
+    if is_need_fill(data, dataclass):
+        columns = make_data_columns(data, dataclass)
+        return stack_columns(columns, dataclass)
+    return data
+
+
+def maybe_add_dtype(data, dataclass):
+    if isinstance(data, np.recarray):
+        return data
+    if isinstance(data, np.ndarray) and data.dtype.fields is not None:
+        return data
+    return stack_columns([data[:, i] for i in range(data.shape[1])], dataclass)
+
+
+def is_need_fill(data, dataclass):
+    if isinstance(data, np.recarray):
+        return False
+    if (isinstance(data, np.ndarray) and data.dtype.fields is None):
+        if len(data.shape) == 1:
+            return len(dataclass.fields()) > 1
+
+        if data.shape[1] < len(dataclass.fields()):
+            return True
+    return False
+
+
+def stack_columns(columns, dataclass):
+    result = np.zeros([columns[0].shape[0]], dtype_of(dataclass))
+    for i, k in enumerate(dtype_names(dataclass)):
+        result[k] = columns[i]
+    return result
