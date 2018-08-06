@@ -1,5 +1,5 @@
 from functools import singledispatch
-from dxl.data import Monoid
+from doufo import Monoid
 
 __all__ = ['concat']
 

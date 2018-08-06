@@ -17,6 +17,8 @@ class Functor(Generic[A], metaclass=ABCMeta):
 
 
 class Monad(Functor[A]):
+    """
+    """
     def __rshift__(self, f: Callable[[A], 'Monad[B]']) -> 'Monad[B]':
         """ Alias to bind """
         return self.bind(f)
