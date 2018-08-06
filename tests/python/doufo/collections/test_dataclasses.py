@@ -1,4 +1,4 @@
-from doufo import dataclass, replace, Pair
+from doufo import dataclass, replace, Pair, convert_to
 from doufo.collections import DataList, DataArray, list_of_dataclass_to_numpy_structure_of_array
 from doufo.collections.dataclasses_ import dtype_kernel
 import operator
@@ -75,3 +75,18 @@ def test_construct_data_array_from_norma_numpy_array():
     data = np.ones([10, 2], np.float32)
     ds = DataArray(data, Point)
     assert len(ds) == 10
+
+
+def test_convert_from_data_array_to_data_list():
+    @dataclass
+    class Point:
+        x: float
+        y: float
+
+    data = np.ones([10, 2], np.float32)
+    ds = DataArray(data, Point)
+    dl = convert_to(ds, DataList)
+    assert len(dl) == 10
+    assert all(map(lambda x: isinstance(x, Point), dl))
+
+

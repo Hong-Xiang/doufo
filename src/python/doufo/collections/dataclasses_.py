@@ -59,7 +59,7 @@ class DataArray(Sequence[T], Functor[T]):
 
     def __getitem__(self, s):
         if isinstance(s, int):
-            return self.unbox()[s]
+            return self.dataclass(*self.data[s])
         else:
             return DataArray(self.data[s], self.dataclass)
 
@@ -131,6 +131,9 @@ def numpy_structure_of_array_to_dataclass(data, dataclass):
     else:
         return from_numpy_structure_of_array(data, dataclass)
 
+@converters.register(DataArray, DataList)
+def data_array_to_data_list(datas):
+    return DataList([x for x in datas])
 
 def from_normal_ndarray(data, dataclass):
     return dataclass(*(data[:, i] for i, _ in enumerate(dataclass.fields())))
