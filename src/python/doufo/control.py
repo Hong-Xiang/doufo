@@ -1,3 +1,11 @@
+"""
+Functor is base class for the generic functors.
+A composite function can be obtain by the fmap method.
+Usually the PureFunction class is used to implement this rather than the basic functor class.
+
+Monad: to be added
+"""
+
 from typing import Generic, TypeVar, Callable
 from abc import abstractmethod, ABCMeta
 

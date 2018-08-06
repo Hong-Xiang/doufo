@@ -21,7 +21,7 @@ class C:
     ((D0, D0), (D0, B0), 1),
     ((D0, D0), (D0, D0), 0),
 ])
-def test_tuple_type_comprae(t0, t1, expect):
+def test_tuple_type_compare(t0, t1, expect):
     assert tuple_type_compare(t0, t1) == expect
 
 
