@@ -66,7 +66,8 @@ def test_dtype_kernel_nested_abstract():
     assert dtype_kernel(e, '') == [('fst/x', float), ('fst/y', float),
                                    ('snd/r', float), ('snd/t', float)]
 
-def test_construct_data_array_from_norma_numpy_array():
+
+def test_construct_data_array_from_normal_numpy_array():
     @dataclass
     class Point:
         x: float
@@ -75,6 +76,18 @@ def test_construct_data_array_from_norma_numpy_array():
     data = np.ones([10, 2], np.float32)
     ds = DataArray(data, Point)
     assert len(ds) == 10
+
+
+def test_construct_data_array_from_normal_numpy_array_with_defaults():
+    @dataclass
+    class Point:
+        x: float
+        y: float = 3.0
+
+    data = np.ones([10, 1], np.float32)
+    ds = DataArray(data, Point)
+    assert len(ds) == 10
+    assert ds[0] == Point(1.0, 3.0)
 
 
 def test_convert_from_data_array_to_data_list():
@@ -88,5 +101,3 @@ def test_convert_from_data_array_to_data_list():
     dl = convert_to(ds, DataList)
     assert len(dl) == 10
     assert all(map(lambda x: isinstance(x, Point), dl))
-
-

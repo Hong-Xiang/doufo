@@ -48,7 +48,7 @@ class DataArray(Sequence[T], Functor[T]):
     def __len__(self):
         # return self.unbox().shape[0]
         return self.shape[0]
-    
+
     @property
     def shape(self):
         return self.data.shape
@@ -131,12 +131,20 @@ def numpy_structure_of_array_to_dataclass(data, dataclass):
     else:
         return from_numpy_structure_of_array(data, dataclass)
 
+
 @converters.register(DataArray, DataList)
 def data_array_to_data_list(datas):
     return DataList([x for x in datas])
 
+
 def from_normal_ndarray(data, dataclass):
-    return dataclass(*(data[:, i] for i, _ in enumerate(dataclass.fields())))
+    inputs = []
+    for i, v in enumerate(dataclass.fields()):
+        if i < data.shape[1]:
+            inputs.append(data[:,i])
+        else:
+            inputs.append(np.full([data.shape[0]]), v.default, v.type)
+    return dataclass(*inputs)
 
 
 def from_numpy_structure_of_array(data, dataclass):
