@@ -48,14 +48,24 @@ class PureFunction(Callable[[A], B], Monad[Callable[[A], B]]):
 
 
 def guess_nargs(f):
-    return len(inspect.getfullargspec(f).args)
+    spec = inspect.getfullargspec(f)
+    if spec.defaults is None:
+        nb_defaults = 0
+    else:
+        nb_defaults = len(spec.defaults)
+    return len(spec.args) - nb_defaults
+
 
 class SingleDispatchFunction(PureFunction):
     def __init__(self, f):
         super().__init__(functools.singledispatch(f), nargs=guess_nargs(f))
+        self.registed = {}
 
     def register(self, *args, **kwargs):
-        return self.f.register(*args, **kwargs)
+        result = self.f.register(*args, **kwargs)
+        if len(args) > 0:
+            self.registed[args[0]] = result
+        return result
 
 
 def singledispatch(f):
@@ -63,6 +73,7 @@ def singledispatch(f):
     decorate of both functools.singledispatch and func
     """
     return SingleDispatchFunction(f)
+
 
 def func(f: Callable) -> PureFunction:
     """

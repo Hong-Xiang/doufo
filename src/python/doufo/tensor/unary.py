@@ -78,6 +78,7 @@ def as_scalar(t):
 
 
 @as_scalar.register(np.ndarray)
+@as_scalar.register(np.bool_)
 def _(t):
     return np.asscalar(t)
 
@@ -98,5 +99,6 @@ def _(t):
 @as_scalar.register(np.int64)
 @as_scalar.register(np.float32)
 @as_scalar.register(np.float64)
+@as_scalar.register(bool)
 def _(t):
     return t
