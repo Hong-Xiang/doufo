@@ -37,7 +37,6 @@ class DataArray(Sequence[T], Functor[T]):
     def __init__(self, data, dataclass, constructor=None):
         self.data = data
         self.dataclass = dataclass
-        from dxl.function.collections.dataclass import numpy_structure_of_array_to_dataclass
         if constructor is None:
             constructor = numpy_structure_of_array_to_dataclass
         self.constructor = constructor
@@ -47,7 +46,12 @@ class DataArray(Sequence[T], Functor[T]):
         return DataArray(type(result), f(result))
 
     def __len__(self):
-        return self.unbox().shape[0]
+        # return self.unbox().shape[0]
+        return self.shape[0]
+    
+    @property
+    def shape(self):
+        return self.data.shape
 
     def filter(self, f):
         result = self.data[f(self.unbox())]
@@ -86,7 +90,7 @@ class DataIterable(IterableElemMap):
 
     def fmap(self, f):
         result = f(head(self.unbox()))
-        return DataIterable(self, type(result), f)
+        return DataIterable(self, type(result))
 
     def filter(self, f):
         return DataIterable(super().filter(f), self.dataclass)
@@ -122,4 +126,15 @@ def list_of_dataclass_to_numpy_structure_of_array(datas):
 
 
 def numpy_structure_of_array_to_dataclass(data, dataclass):
+    if data.dtype.fields is None:
+        return from_normal_ndarray(data, dataclass)
+    else:
+        return from_numpy_structure_of_array(data, dataclass)
+
+
+def from_normal_ndarray(data, dataclass):
+    return dataclass(*(data[:, i] for i, _ in enumerate(dataclass.fields())))
+
+
+def from_numpy_structure_of_array(data, dataclass):
     return dataclass(*(data[k] for k in dataclass.fields()))

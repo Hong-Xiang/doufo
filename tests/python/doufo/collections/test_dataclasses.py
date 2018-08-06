@@ -65,3 +65,13 @@ def test_dtype_kernel_nested_abstract():
     e = Event(PointC(0.0, 1.0), PointR(1.0, 3.0))
     assert dtype_kernel(e, '') == [('fst/x', float), ('fst/y', float),
                                    ('snd/r', float), ('snd/t', float)]
+
+def test_construct_data_array_from_norma_numpy_array():
+    @dataclass
+    class Point:
+        x: float
+        y: float
+
+    data = np.ones([10, 2], np.float32)
+    ds = DataArray(data, Point)
+    assert len(ds) == 10
