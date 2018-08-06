@@ -1,12 +1,14 @@
-from doufo.pair import Pair
+from doufo import Pair, dataclass, DataClass
+import pytest
 
 
+@pytest.mark.skip("not implemented yet.")
 def test_generic():
     p = Pair[int, int](1, 2)
 
 
 def test_eq():
-    assert Pair[int, int](1, 2) == Pair(1, 2)
+    assert Pair(1, 2) == Pair(1, 2)
 
 
 def test_neq():
@@ -27,3 +29,17 @@ def test_flip():
 
 def test_unbox():
     assert Pair(1, 2).unbox() == (1, 2)
+
+def test_netsted():
+    @dataclass
+    class Point:
+        x: float
+        y: float
+    
+    @dataclass
+    class Event(Pair):
+        fst: Point
+        snd: Point
+    
+    e = Event(Point(0.0, 1.0), Point(1.0, 2.0))
+    assert issubclass(e.fields()['fst'].type, DataClass)
