@@ -11,8 +11,7 @@ from .unary import *
 from .unary_reduce import *
 from .unary_with_args import *
 
-from doufo.tensor import (to_tensor_like, as_scalar,
-                          is_scalar, shape, ndim, as_scalar, sum_, shape)
+from doufo.tensor import (to_tensor_like, as_scalar, is_scalar, shape, ndim, sum_, shape, argmax)
 
 T = TypeVar('T') # TensorLike
 
@@ -22,7 +21,6 @@ class Tensor(Functor[T], FunctorArithmeticMixin):
     __array_priority__ = 16
 
     def __init__(self, data):
-        from dxl.function.tensor import to_tensor_like
         self.data = to_tensor_like(data)
 
     def unbox(self):
@@ -132,3 +130,7 @@ def _(x, y):
 @shape.register(Tensor)
 def _(t):
     return shape(t.unbox())
+
+@argmax.register(Tensor)
+def _(t):
+    return argmax(t.unbox())
