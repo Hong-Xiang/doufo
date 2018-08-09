@@ -24,7 +24,7 @@ class PureIterable(Iterable[T], Functor[Iterable[T]], Monoid[Iterable[T]]):
 class IterableElemMap(PureIterable[T]):
     """
     Iterable Functor, fmap functon on elements of iterable.
-    Useful for chaning data.
+    Useful for chaining data.
     """
     def __init__(self, source: PureIterable[T], opeartion=Optional[Callable]):
         self.source = source

@@ -14,6 +14,7 @@ from typing import Callable, Union, Generic, cast, Any
 __all__ = ['PureFunction', 'func', 'identity', 'flip', 'singledispatch']
 
 from typing import TypeVar
+from numba import jit
 
 
 A = TypeVar('A')
