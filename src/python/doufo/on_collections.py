@@ -4,6 +4,16 @@ import collections.abc
 import itertools
 import functools
 import operator
+
+"""
+This file provide the common operations on the data.
+All the operations are warpped as a PureFunction and single dispatched for 
+specfic data type.
+Example:
+    head: get the data from the start.
+...
+"""
+
 __all__ = ['take', 'head', 'concat', 'fzip', 'tail', 'flatten', 'concat']
 
 T = TypeVar('T')

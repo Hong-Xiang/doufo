@@ -1,9 +1,13 @@
 from functools import partial
 
+# from .control import Functor
 __all__ = ['FunctorArithmeticMixin', 'GetItemSingleBatchMixin']
 
 
-class FunctorArithmeticMixin:
+class FunctorArithmeticMixin():
+    """
+    Provide multiple arithmetic method for the classes which includes this.
+    """
     def __eq__(self, t):
         return self.fmap(lambda d: d == t)
 
