@@ -147,3 +147,15 @@ def test_convert_from_data_array_to_data_list():
     dl = convert_to(ds, DataList)
     assert len(dl) == 10
     assert all(map(lambda x: isinstance(x, Point), dl))
+
+
+def test_convert_from_data_list_to_data_array():
+    @dataclass
+    class Point:
+        x: float
+        y: float
+
+    dl = DataList([Point(0.0, 0.0) for _ in range(10)])
+    da = convert_to(dl, DataArray)
+    assert len(dl) == 10
+    assert all(map(lambda x: isinstance(x, Point), dl))
