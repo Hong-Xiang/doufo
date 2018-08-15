@@ -4,6 +4,16 @@ import collections.abc
 import itertools
 import functools
 import operator
+
+"""
+This file provide the common operations on the data.
+All the operations are warpped as a PureFunction and single dispatched for 
+specfic data type.
+Example:
+    head: get the data from the start.
+...
+"""
+
 __all__ = ['take', 'head', 'concat', 'fzip', 'tail', 'flatten', 'concat']
 
 T = TypeVar('T')
@@ -52,7 +62,10 @@ def concat(xss: Sequence[Iterable[T]], acc: Optional[Iterable[T]]) -> Iterable[T
         return concat_kernel(xss, operator.add, acc)
     if isinstance(xss[0], tuple):
         return tuple(concat_kernel([list(x) for x in xss], operator.add, acc))
-    return functools.reduce(operator.methodcaller('extend'), xss, acc)
+    if acc is None:
+        return functools.reduce(lambda xs, t: xs.extend(t), xss)    
+    else:
+        return functools.reduce(lambda xs, t: xs.extend(t), xss, acc)
 
 
 def concat_kernel(xss, op, acc):

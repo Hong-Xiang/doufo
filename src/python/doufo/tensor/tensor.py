@@ -11,18 +11,22 @@ from .unary import *
 from .unary_reduce import *
 from .unary_with_args import *
 
-from doufo.tensor import (to_tensor_like, as_scalar,
-                          is_scalar, shape, ndim, as_scalar, sum_, shape)
+from doufo.tensor import (to_tensor_like, as_scalar, is_scalar, shape, ndim, sum_, shape, argmax)
 
 T = TypeVar('T') # TensorLike
 
+from numba import jit
 
 class Tensor(Functor[T], FunctorArithmeticMixin):
     # HACK for radd to work
     __array_priority__ = 16
 
     def __init__(self, data):
-        from dxl.function.tensor import to_tensor_like
+        # if isinstance(data, np.ndarray):
+        #     self.data = data
+        # elif isinstance(data, Tensor):
+        #     self.data = data.data
+        # else:
         self.data = to_tensor_like(data)
 
     def unbox(self):
@@ -56,6 +60,14 @@ class Tensor(Functor[T], FunctorArithmeticMixin):
 
     def __iter__(self):
         return (Tensor(x) if not is_scalar(x) else as_scalar(x) for x in self.unbox())
+        # return iter(self.unbox())
+        # @jit
+        # def iters():
+            # return (Tensor(x) for x in self.unbox())
+        # return iters()
+        # return map(Tensor, self.unbox())
+
+        
 
     def fmap(self, f):
         return Tensor(f(self.unbox()))
@@ -115,10 +127,12 @@ def _(t):
 def _(t):
     return ndim(t.unbox())
 
+import numpy as np
 
-@transpose.register(Tensor)
-def _(t, perm=None):
-    return t.fmap(lambda t: transpose(t, perm))
+# @transpose.register(Tensor)
+# def _(t, perm=None):
+    # return t.fmap(lambda t: transpose(t, perm))
+    # return Tensor(np.transpose(t.unbox(), perm))
 
 @norm.register(Tensor)
 def _(t, p=2.0):
@@ -132,3 +146,7 @@ def _(x, y):
 @shape.register(Tensor)
 def _(t):
     return shape(t.unbox())
+
+@argmax.register(Tensor)
+def _(t):
+    return argmax(t.unbox())

@@ -4,13 +4,18 @@ from doufo import singledispatch
 
 __all__ = ['transpose', 'norm']
 
-@singledispatch
+# @singledispatch
 def transpose(t, perm=None):
-    raise NotImplementedError()
+    # raise NotImplementedError()
+    if isinstance(t, np.ndarray):
+        return np.transpose(t, perm)
+    from .tensor import Tensor
+    if isinstance(t, Tensor):
+        return Tensor(np.transpose(t.unbox(), perm))
 
-@transpose.register(np.ndarray)
-def _(t, perm=None):
-    return np.transpose(t, perm)
+# @transpose.register(np.ndarray)
+# def _(t, perm=None):
+#     return np.transpose(t, perm)
 
 @singledispatch
 def norm(t, p=2.0):

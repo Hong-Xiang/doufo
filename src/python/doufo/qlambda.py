@@ -15,7 +15,7 @@ class QuickLambda(PureFunction, FunctorArithmeticMixin):
     """
 
     def fmap(self, f):
-        return QuickLambda(lambda x: f(self.__call__(x)))
+        return QuickLambda(lambda o: f(self.__call__(o)))
 
 
     def __getattr__(self, *args, **kwargs):

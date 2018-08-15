@@ -48,7 +48,7 @@ class Vector(Tensor[T]):
         n: position of "hot"
         l: lenght of vector
         """
-        v = [0.0 for _ in range(l)]
+        v = [0.0]*l
         v[n] = 1.0
         return Vector(v)
 
