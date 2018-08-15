@@ -1,5 +1,6 @@
 from .function import func
 from functools import wraps, cmp_to_key
+from multipledispatch import Dispatcher
 
 __all__ = ['converters', 'convert_to', 'convert']
 
@@ -35,6 +36,7 @@ def convert_to(o, target_type):
 @func
 def convert(target_type, o):
     return converters.convert(type(o), target_type)(o)
+
 
 def tuple_type_compare(types0, types1):
     compares = [single_type_compare(types0[0], types1[0]),

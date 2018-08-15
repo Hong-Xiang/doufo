@@ -75,7 +75,11 @@ def func(f: Callable) -> PureFunction:
     return cast(PureFunction, wraps(f)(PureFunction(f)))
 
 
+
+
+
 identity: PureFunction[A, A] = func(lambda x: x)
+
 
 
 @func

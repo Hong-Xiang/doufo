@@ -4,6 +4,7 @@ from .control import *
 from .mixins import *
 from .monoid import Monoid
 from .function import *
+from .dispatches import *
 from .list import *
 from .iterable import *
 from .maybe import Maybe
@@ -12,3 +13,4 @@ from ._dataclass import *
 from .pair import Pair
 from .qlambda import *
 from .convert import *
+
