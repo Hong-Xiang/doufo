@@ -1,6 +1,5 @@
-from doufo import PureFunction, func, singledispatch
-from doufo.function import guess_nargs
-
+from doufo.function import PureFunction, func, singledispatch,func_nargs
+from doufo.function import guess_nargs, guess_starargs,get_nargs_flag
 
 def test_currying():
     def foo_(a, b, c):
@@ -21,6 +20,37 @@ def test_func_deco():
         return a + b
     assert foo(1)(2) == 3
 
+def test_func_nargs():
+    @func_nargs(2)
+    def foo(a, b):
+        return a + b
+    assert foo(2)(3) == 5
+
+
+def test_func_nargs_none():
+    @func_nargs()
+    def foo(a, b):
+        return a + b
+    assert foo(2)(3) == 5
+
+def test_func_nargs_not_inferable_with_parameter():
+    @func_nargs(4)
+    def foo(*args):
+        return sum(args)
+    #print(guess_starargs(foo(2)(3)))
+    assert foo(2)(3)(4)(5) == 14
+def test_func_not_inferable():
+    @func
+    def foo(*args):
+        return sum(args)
+    assert foo(2)(3)(4)(5)() == 14
+    assert foo(2)() == 2
+
+def test_func_nargs_not_inferable_without_parameter():
+    @func_nargs()
+    def foo(*args):
+        return sum(args)
+    assert foo(2)(3)(5)() == 10
 
 def test_bind():
     @func
@@ -59,3 +89,25 @@ def test_guess_nargs_with_defaults():
     def foo(a, b=1):
         pass
     assert guess_nargs(foo) == 1
+def test_guess_starargs():
+    def foo(*args):
+        pass
+    def foo1(a,b):
+        pass
+    def foo2(a,b,*args):
+        pass
+    assert guess_starargs(foo) == True
+    assert guess_starargs(foo1) == False
+    assert guess_starargs(foo2) == True
+def test_get_nargs_flag():
+    flag1 = get_nargs_flag(None, None)
+    flag2 = get_nargs_flag(1, True)
+    flag3 = get_nargs_flag(2, False)
+    flag4 = get_nargs_flag(3, None)
+    assert flag1 == False
+    assert flag2 == True
+    assert flag3 == False
+    assert flag4 == True
+if __name__=='__main__':
+    test_func_nargs_not_inferable_with_parameter()
+    test_get_nargs_flag()
