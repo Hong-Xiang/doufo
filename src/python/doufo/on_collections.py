@@ -19,7 +19,7 @@ __all__ = ['take', 'head', 'concat', 'fzip', 'tail', 'flatten', 'concat']
 T = TypeVar('T')
 
 
-@func
+@func()
 def take(n: int, xs: Iterable[T]) -> Iterable[T]:
     return take_(xs, n)
 
@@ -34,7 +34,7 @@ def _(xs: Iterable[T], n: int) -> Iterable[T]:
     return xs[:n]
 
 
-@func
+@func()
 def head(xs: Iterable[T]):
     return head_(xs)
 
@@ -54,7 +54,7 @@ def _(xs: Sequence[T]) -> Sequence[T]:
     return xs[1:]
 
 
-@func
+@func()
 def concat(xss: Sequence[Iterable[T]], acc: Optional[Iterable[T]]) -> Iterable[T]:
     if len(xss) == 0:
         return List([])
@@ -75,7 +75,7 @@ def concat_kernel(xss, op, acc):
         return functools.reduce(op, xss, acc)
 
 
-@func
+@func()
 def fzip(*xss: Tuple[Iterable]) -> Iterable[Tuple]:
     return zip_(xss)
 

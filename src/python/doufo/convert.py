@@ -33,12 +33,12 @@ class ConvertersDict:
 converters = ConvertersDict()
 
 
-@func
+@func()
 def convert_to(o, target_type):
     return converters.convert(type(o), target_type)(o)
 
 
-@func
+@func()
 def convert(target_type, o):
     return converters.convert(type(o), target_type)(o)
 

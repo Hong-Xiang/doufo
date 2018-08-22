@@ -1,8 +1,5 @@
-from abc import ABC, abstractmethod, abstractclassmethod
-from typing import Generic, TypeVar, Iterable, Sequence
-import functools
-import operator
-
+from abc import abstractmethod
+from typing import Generic, TypeVar
 
 __all__ = ['Monoid']
 
@@ -14,7 +11,8 @@ class Monoid(Generic[T]):
     Describe the objects that surpport associative operation.
     e.g. the addition of lists. ([1,2] + [3,4]) + [5,6] = [1,2] + ([3,4] + [5,6])
     '''
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def empty(cls) -> 'Monoid[T]':
         pass
 
