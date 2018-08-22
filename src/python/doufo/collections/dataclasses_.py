@@ -34,8 +34,11 @@ class DataList(List[T]):
 
 class DataArray(Sequence[T], Functor[T]):
     def __init__(self, data, dataclass, constructor=None):
-        self.data = maybe_fill(data, dataclass)
-        self.data = maybe_add_dtype(self.data, dataclass)
+        if isinstance(data, DataArray):
+            self.data = data.data
+        else:
+            self.data = maybe_fill(data, dataclass)
+            self.data = maybe_add_dtype(self.data, dataclass)
         self.dataclass = dataclass
         if constructor is None:
             constructor = numpy_structure_of_array_to_dataclass
