@@ -23,12 +23,12 @@ C = TypeVar('C')
 
 
 class PureFunction(Callable[[A], B], Monad[Callable[[A], B]]):
-	def __init__(self, f, *, nargs=None, nargs_flag=None):
+	def __init__(self, f, *, nargs=None):
 		self.f = f
 		self.nargs = nargs or guess_nargs(f)
-		self.is_guessed_nargs = nargs is None
-		self.star_args_flag = guess_starargs(f)
-		self.nargs_flag = get_nargs_flag(nargs, nargs_flag)
+		#self.is_guessed_nargs = nargs is None
+		#self.star_args_flag = guess_starargs(f)
+		#self.nargs_flag = get_nargs_flag(nargs, nargs_flag)
 
 	def __call__(self, *args, **kwargs) -> Union['PureFunction', B]:
 		if len(args) == 0 and len(kwargs) == 0:
@@ -39,7 +39,7 @@ class PureFunction(Callable[[A], B], Monad[Callable[[A], B]]):
 		# else:
 		if self.nargs is None or len(args) < self.nargs:
 			nargs_post = self.nargs - len(args) if self.nargs is not None else None
-			return PureFunction(partial(self.f, *args, **kwargs),nargs=nargs_post,nargs_flag=self.nargs_flag)
+			return PureFunction(partial(self.f, *args, **kwargs),nargs=nargs_post)
 		return self.f(*args, **kwargs)
 
 
@@ -74,25 +74,7 @@ def guess_nargs(f):
 		nb_defaults = len(spec.defaults)
 	return len(spec.args) - nb_defaults
 
-def guess_starargs(f):
-	spec = inspect.getfullargspec(f)
-	if spec.varargs == None:
-		return False
-	else:
-		return True
 
-def get_nargs_flag(nargs, nargs_flag):
-	"""
-	the priority of nargs_flag passing is higher than nargs's.
-	"""
-	if nargs_flag is None:
-		if nargs is None:
-			flag = False
-		else:
-			flag = True
-	else:
-		flag = nargs_flag
-	return flag
 
 class SingleDispatchFunction(PureFunction):
 	def __init__(self, f):

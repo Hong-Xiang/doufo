@@ -1,6 +1,5 @@
 from doufo.function import PureFunction, func, singledispatch,func_nargs
-from doufo.function import guess_nargs, guess_starargs,get_nargs_flag
-
+from doufo.function import guess_nargs
 def test_currying():
     def foo_(a, b, c):
         return a + b + c
@@ -89,25 +88,4 @@ def test_guess_nargs_with_defaults():
     def foo(a, b=1):
         pass
     assert guess_nargs(foo) == 1
-def test_guess_starargs():
-    def foo(*args):
-        pass
-    def foo1(a,b):
-        pass
-    def foo2(a,b,*args):
-        pass
-    assert guess_starargs(foo) == True
-    assert guess_starargs(foo1) == False
-    assert guess_starargs(foo2) == True
-def test_get_nargs_flag():
-    flag1 = get_nargs_flag(None, None)
-    flag2 = get_nargs_flag(1, True)
-    flag3 = get_nargs_flag(2, False)
-    flag4 = get_nargs_flag(3, None)
-    assert flag1 == False
-    assert flag2 == True
-    assert flag3 == False
-    assert flag4 == True
-if __name__=='__main__':
-    test_func_nargs_not_inferable_with_parameter()
-    test_get_nargs_flag()
+
