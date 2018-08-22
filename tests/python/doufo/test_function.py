@@ -1,4 +1,4 @@
-from doufo.function import PureFunction, func, singledispatch,func_nargs
+from doufo.function import PureFunction, func, func_nargs
 from doufo.function import guess_nargs
 def test_currying():
     def foo_(a, b, c):
@@ -63,19 +63,7 @@ def test_bind():
     assert (foo >> bar)(3) == 8
 
 
-def test_singledispatch():
-    @singledispatch
-    def goo(a, b):
-        return a + b
 
-    @goo.register(int)
-    def _(a, b):
-        return a + 2 * b
-
-    assert goo(1)(2) == 5
-    assert goo(1, 2) == 5
-    assert goo('1')('2') == '12'
-    assert goo('1', '2') == '12'
 
 
 def test_guess_nargs():

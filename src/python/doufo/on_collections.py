@@ -24,7 +24,7 @@ def take(n: int, xs: Iterable[T]) -> Iterable[T]:
     return take_(xs, n)
 
 
-@singledispatch
+@singledispatch()
 def take_(xs: Iterable[T], n: int) -> Iterable[T]:
     raise TypeError(f"Invalid type of xs: {type(xs)}.")
 
@@ -39,12 +39,12 @@ def head(xs: Iterable[T]):
     return head_(xs)
 
 
-@singledispatch
+@singledispatch()
 def head_(xs: Iterable[T]):
     return next(iter(xs))
 
 
-@singledispatch
+@singledispatch()
 def tail(xs: Iterable[T]):
     raise NotImplementedError()
 
@@ -80,12 +80,12 @@ def fzip(*xss: Tuple[Iterable]) -> Iterable[Tuple]:
     return zip_(xss)
 
 
-@singledispatch
+@singledispatch()
 def zip_(xss):
     return zip(*xss)
 
 
-@singledispatch
+@singledispatch()
 def flatten(x: Iterable[T]) -> Iterable[T]:
     raise TypeError()
 

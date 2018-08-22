@@ -11,7 +11,7 @@ import functools
 import inspect
 from typing import Callable, Union, Generic, cast, Any
 
-__all__ = ['PureFunction', 'func', 'identity', 'flip', 'singledispatch']
+__all__ = ['PureFunction', 'func', 'identity', 'flip']
 
 from typing import TypeVar
 from numba import jit
@@ -76,23 +76,23 @@ def guess_nargs(f):
 
 
 
-class SingleDispatchFunction(PureFunction):
-	def __init__(self, f):
-		super().__init__(functools.singledispatch(f), nargs=guess_nargs(f))
-		self.registed = {}
-
-	def register(self, *args, **kwargs):
-		result = self.f.register(*args, **kwargs)
-		if len(args) > 0:
-			self.registed[args[0]] = result
-		return result
-
-
-def singledispatch(f):
-	"""
-	decorate of both functools.singledispatch and func
-	"""
-	return SingleDispatchFunction(f)
+# class SingleDispatchFunction(PureFunction):
+# 	def __init__(self, f):
+# 		super().__init__(functools.singledispatch(f), nargs=guess_nargs(f))
+# 		self.registed = {}
+#
+# 	def register(self, *args, **kwargs):
+# 		result = self.f.register(*args, **kwargs)
+# 		if len(args) > 0:
+# 			self.registed[args[0]] = result
+# 		return result
+#
+#
+# def singledispatch(f):
+# 	"""
+# 	decorate of both functools.singledispatch and func
+# 	"""
+# 	return SingleDispatchFunction(f)
 
 
 def func(f: Callable) -> PureFunction:

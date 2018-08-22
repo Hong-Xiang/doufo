@@ -4,7 +4,7 @@ import numpy as np
 __all__ = ['sum_', 'norm', 'is_scalar']
 
 
-@singledispatch
+@singledispatch()
 def sum_(t):
     raise TypeError
 
@@ -15,7 +15,7 @@ def _(t):
 
 
 
-@singledispatch
+@singledispatch()
 def norm(t, *, p=2.0):
     return np.linalg.norm(t)
 
@@ -23,7 +23,7 @@ def norm(t, *, p=2.0):
 
 
 
-@singledispatch
+@singledispatch()
 def is_scalar(t):
     return np.isscalar(t)
 

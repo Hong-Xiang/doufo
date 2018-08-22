@@ -7,7 +7,7 @@ DEFAULT_CONSTRUCTOR = np.array
 __all__ = ['to_tensor_like']
 
 
-@singledispatch
+@singledispatch()
 def to_tensor_like(t):
     return DEFAULT_CONSTRUCTOR(t)
 

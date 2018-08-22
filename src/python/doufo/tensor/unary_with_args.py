@@ -17,7 +17,7 @@ def transpose(t, perm=None):
 # def _(t, perm=None):
 #     return np.transpose(t, perm)
 
-@singledispatch
+@singledispatch()
 def norm(t, p=2.0):
     raise TypeError()
 

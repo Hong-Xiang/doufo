@@ -14,7 +14,7 @@ __all__ = ['shape', 'ndim', 'size', 'abs_', 'unit',
            'as_scalar', 'square', 'argmax']
 
 
-@singledispatch
+@singledispatch()
 def shape(t) -> List[int]:
     raise TypeError(method_not_support_msg(shape, t))
 
@@ -29,7 +29,7 @@ def _(t) -> List[int]:
     return List(t.shape.as_list())
 
 
-@singledispatch
+@singledispatch()
 def ndim(t) -> int:
     raise TypeError(method_not_support_msg(ndim, t))
 
@@ -39,7 +39,7 @@ def _(t) -> List[int]:
     return t.ndim
 
 
-@singledispatch
+@singledispatch()
 def size(t) -> int:
     raise TypeError(method_not_support_msg(size, t))
 
@@ -49,7 +49,7 @@ def _(t) -> List[int]:
     return t.size
 
 
-@singledispatch
+@singledispatch()
 def argmax(t):
     raise TypeError(method_not_support_msg(argmax, t))
 
@@ -59,7 +59,7 @@ def _(t):
     return np.argmax(t)
 
 
-@singledispatch
+@singledispatch()
 def abs_(t):
     raise TypeError()
 
@@ -69,7 +69,7 @@ def _(t):
     return np.abs(t)
 
 
-@singledispatch
+@singledispatch()
 def unit(t):
     raise TypeError
 
@@ -79,7 +79,7 @@ def _(t):
     return t / np.linalg.norm(t)
 
 
-@singledispatch
+@singledispatch()
 def as_scalar(t):
     raise TypeError()
 
@@ -90,7 +90,7 @@ def _(t):
     return np.asscalar(t)
 
 
-@singledispatch
+@singledispatch()
 def square(t):
     raise TypeError
 

@@ -5,7 +5,7 @@ import numpy as np
 __all__ = ['all_close', 'matmul']
 
 
-@singledispatch
+@singledispatch()
 def all_close(x, y):
     raise TypeError(method_not_support_msg('all_close', x))
 
@@ -21,6 +21,6 @@ def _(x, y):
     return abs(x - y) < 1e-7
 
 
-@singledispatch
+@singledispatch()
 def matmul(x, y):
     raise TypeError
