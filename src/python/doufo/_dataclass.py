@@ -30,7 +30,6 @@ class DataClass:
         return tuple([x.as_nested_tuple() if isinstance(x, DataClass) else x
                       for x in result])
 
-
 def dataclass(cls):
     base = attr.s(frozen=True, auto_attribs=True, slots=True)(cls)
     return types.new_class(base.__name__, (base, DataClass))
@@ -42,3 +41,4 @@ def replace(o: DataClass, **kwargs):
 
 def fields(o: DataClass):
     return o.fields()
+

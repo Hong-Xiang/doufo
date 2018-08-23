@@ -19,12 +19,12 @@ __all__ = ['take', 'head', 'concat', 'fzip', 'tail', 'flatten', 'concat']
 T = TypeVar('T')
 
 
-@func
+@func()
 def take(n: int, xs: Iterable[T]) -> Iterable[T]:
     return take_(xs, n)
 
 
-@singledispatch
+@singledispatch()
 def take_(xs: Iterable[T], n: int) -> Iterable[T]:
     raise TypeError(f"Invalid type of xs: {type(xs)}.")
 
@@ -34,17 +34,17 @@ def _(xs: Iterable[T], n: int) -> Iterable[T]:
     return xs[:n]
 
 
-@func
+@func()
 def head(xs: Iterable[T]):
     return head_(xs)
 
 
-@singledispatch
+@singledispatch()
 def head_(xs: Iterable[T]):
     return next(iter(xs))
 
 
-@singledispatch
+@singledispatch()
 def tail(xs: Iterable[T]):
     raise NotImplementedError()
 
@@ -54,7 +54,7 @@ def _(xs: Sequence[T]) -> Sequence[T]:
     return xs[1:]
 
 
-@func
+@func()
 def concat(xss: Sequence[Iterable[T]], acc: Optional[Iterable[T]]) -> Iterable[T]:
     if len(xss) == 0:
         return List([])
@@ -63,7 +63,7 @@ def concat(xss: Sequence[Iterable[T]], acc: Optional[Iterable[T]]) -> Iterable[T
     if isinstance(xss[0], tuple):
         return tuple(concat_kernel([list(x) for x in xss], operator.add, acc))
     if acc is None:
-        return functools.reduce(lambda xs, t: xs.extend(t), xss)    
+        return functools.reduce(lambda xs, t: xs.extend(t), xss)
     else:
         return functools.reduce(lambda xs, t: xs.extend(t), xss, acc)
 
@@ -75,19 +75,19 @@ def concat_kernel(xss, op, acc):
         return functools.reduce(op, xss, acc)
 
 
-@func
+@func()
 def fzip(*xss: Tuple[Iterable]) -> Iterable[Tuple]:
     return zip_(xss)
 
 
-@singledispatch
+@singledispatch()
 def zip_(xss):
     return zip(*xss)
 
 
-@singledispatch
+@singledispatch()
 def flatten(x: Iterable[T]) -> Iterable[T]:
-    raise TypeError()
+    return x
 
 
 @flatten.register(list)

@@ -1,10 +1,9 @@
-import collections.abc
 from typing import Sequence, TypeVar
+
 import numpy as np
-from doufo import (Functor, Monad, List, IterableElemMap, IterableIterMap,
-                   Monoid, identity, head, concat, DataClass, flatten,
-                   converters, convert_to)
-from functools import partial
+
+from doufo import (Functor, List, IterableElemMap, identity, head, concat, DataClass, flatten,
+                   converters)
 
 __all__ = ['DataList', 'DataArray', 'DataIterable']
 
@@ -23,11 +22,11 @@ class DataList(List[T]):
             dataclass = type(data[0])
         self.dataclass = dataclass
 
-    def fmap(self, f):
+    def fmap(self, f) -> 'DataList[T]':
         result = [f(x) for x in self.unbox()]
         if len(result) == 0:
             return DataList([], None)
-        return DataList(result, type(result))
+        return DataList(result, type(result[0]))
 
     def filter(self, f):
         return DataList([x for x in self.unbox() if f(x)], self.dataclass)
@@ -35,8 +34,11 @@ class DataList(List[T]):
 
 class DataArray(Sequence[T], Functor[T]):
     def __init__(self, data, dataclass, constructor=None):
-        self.data = maybe_fill(data, dataclass)
-        self.data = maybe_add_dtype(self.data, dataclass)
+        if isinstance(data, DataArray):
+            self.data = data.data
+        else:
+            self.data = maybe_fill(data, dataclass)
+            self.data = maybe_add_dtype(self.data, dataclass)
         self.dataclass = dataclass
         if constructor is None:
             constructor = numpy_structure_of_array_to_dataclass
@@ -108,9 +110,10 @@ def dtype_of(dataclass_type):
 
 
 def dtype_kernel(dataclass_type, root):
-    return concat([dtype_parse_item(k, v, root+k, dataclass_type)
+    return concat([dtype_parse_item(k, v, root + k, dataclass_type)
                    for k, v in dataclass_type.fields().items()],
                   None)
+
 
 def dtype_names(dataclass_type):
     return dtype_of(dataclass_type).names
@@ -123,13 +126,15 @@ def dtype_parse_item(k, v, name, dataclass_type):
         to_parse = v.type
     else:
         to_parse = getattr(dataclass_type, k)
-    return dtype_kernel(to_parse, name+'/')
+    return dtype_kernel(to_parse, name + '/')
 
 
 @converters.register(DataList, DataArray)
-def list_of_dataclass_to_numpy_structure_of_array(datas):
-    return np.rec.array(list(datas.fmap(lambda c: flatten(c.as_nested_tuple()))),
-                        dtype_of(datas[0]))
+def list_of_dataclass_to_numpy_structure_of_array(datas: DataList) -> DataArray:
+    return DataArray(np.rec.array(list(datas.fmap(lambda c: flatten(c.as_nested_tuple()))),
+                                  dtype_of(datas[0])),
+                     datas.dataclass)
+
 
 # TODO rename numpy_structure_of_array_to_dataclass to numpy_array_to_data_class
 
@@ -138,7 +143,7 @@ def numpy_structure_of_array_to_dataclass(data, dataclass):
     if isinstance(data, np.recarray):
         return from_numpy_structure_of_array(data, dataclass)
     if (isinstance(data, np.ndarray)
-        and data.dtype.fields is None
+            and data.dtype.fields is None
             and not isinstance(data, np.recarray)):
         return from_normal_ndarray(data, dataclass)
     return from_numpy_structure_of_array(data, dataclass)

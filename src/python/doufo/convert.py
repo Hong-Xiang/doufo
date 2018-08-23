@@ -5,8 +5,9 @@
 
 from .function import func
 from functools import wraps, cmp_to_key
+from multipledispatch import Dispatcher
 
-__all__ = ['converters', 'convert_to']
+__all__ = ['converters', 'convert_to', 'convert']
 
 class ConvertersDict:
     def __init__(self):
@@ -24,8 +25,6 @@ class ConvertersDict:
             return f
         return deco
 
-    def __call__(self, obj):
-        return ConvertNeedTarget(obj, self)
 
     def convert(self, t0, t1):
         return self.converters[(t0, t1)]
@@ -34,8 +33,13 @@ class ConvertersDict:
 converters = ConvertersDict()
 
 
-@func
+@func()
 def convert_to(o, target_type):
+    return converters.convert(type(o), target_type)(o)
+
+
+@func()
+def convert(target_type, o):
     return converters.convert(type(o), target_type)(o)
 
 
