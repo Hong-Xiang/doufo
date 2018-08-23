@@ -14,13 +14,9 @@ def _(t):
     return np.sum(t)
 
 
-
 @singledispatch()
-def norm(t, *, p=2.0):
+def norm(t, p=2.0):
     return np.linalg.norm(t)
-
-
-
 
 
 @singledispatch()
@@ -41,6 +37,3 @@ def t(t):
 @is_scalar.register(np.ndarray)
 def _(t):
     return np.isscalar(t)
-
-
-

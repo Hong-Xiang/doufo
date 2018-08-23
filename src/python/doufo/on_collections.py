@@ -63,7 +63,7 @@ def concat(xss: Sequence[Iterable[T]], acc: Optional[Iterable[T]]) -> Iterable[T
     if isinstance(xss[0], tuple):
         return tuple(concat_kernel([list(x) for x in xss], operator.add, acc))
     if acc is None:
-        return functools.reduce(lambda xs, t: xs.extend(t), xss)    
+        return functools.reduce(lambda xs, t: xs.extend(t), xss)
     else:
         return functools.reduce(lambda xs, t: xs.extend(t), xss, acc)
 
@@ -87,7 +87,7 @@ def zip_(xss):
 
 @singledispatch()
 def flatten(x: Iterable[T]) -> Iterable[T]:
-    raise TypeError()
+    return x
 
 
 @flatten.register(list)

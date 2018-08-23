@@ -5,11 +5,12 @@ to generate a new function. Thus, a series of functions can be composited by
 generating new PureFunction instance and finally get a complex function.
 """
 
-from doufo.control import Monad
+from doufo.control import Monad, Functor
 from functools import partial, wraps
 import functools
 import inspect
-from typing import Callable, Union, Generic, cast, Any
+from typing import Callable, Union, Generic, cast, Any, TypeVar
+from abc import ABCMeta, abstractmethod
 
 __all__ = ['PureFunction', 'func', 'identity', 'flip']
 
@@ -19,6 +20,16 @@ from numba import jit
 A = TypeVar('A')
 B = TypeVar('B')
 C = TypeVar('C')
+
+
+class Function(Functor, metaclass=ABCMeta):
+    @abstractmethod
+    def nargs(self):
+        pass
+
+    @abstractmethod
+    def __call__(self, *args, **kwargs):
+        pass
 
 
 class PureFunction(Callable[[A], B], Monad[Callable[[A], B]]):
