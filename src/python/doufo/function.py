@@ -5,9 +5,9 @@ generating new PureFunction instance and finally get a complex function.
 """
 
 import inspect
-from functools import partial, wraps
-from typing import Callable, Union, cast, Optional, Generic
 from abc import abstractmethod
+from functools import partial, wraps
+from typing import Callable, Optional
 
 from doufo.control import Monad
 
@@ -22,23 +22,12 @@ T = TypeVar('T')
 
 
 class Function(Callable, Monad[Callable]):
+    @abstractmethod
     def __call__(self, *args, **kwargs):
-        # HACK force call with syntax f()
-        if len(args) == 0 and len(kwargs) == 0:
-            return self.f()
-        if nargs_left(self.nargs, args) == 0:
-            return self.f(*args, **kwargs)
-        return WrappedFunction(partial(self.unbox(), *args, **kwargs), nargs=nargs_left(self.nargs, args))
+        pass
 
     def bind(self, f: 'Function') -> 'Function':
         return f.fmap(self)
-
-    def __matmul__(self, f: 'Function') -> 'Function':
-        def foo(*args):
-            mid = f(*args[:f.nargs])
-            return self(mid, *args[f.nargs:])
-
-        return WrappedFunction(foo, nargs=self.nargs - f.nargs + 1)
 
     @abstractmethod
     def unbox(self) -> Callable:
@@ -60,6 +49,20 @@ class WrappedFunction(Function):
         self.f = f
         self._nargs = nargs if nargs is not None else guess_nargs(f)
         self._nouts = nouts
+
+    def __call__(self, *args, **kwargs):
+        if len(args) == 0 and len(kwargs) == 0:
+            return self.f()
+        if nargs_left(self.nargs, args) == 0:
+            return self.f(*args, **kwargs)
+        return WrappedFunction(partial(self.unbox(), *args, **kwargs), nargs=nargs_left(self.nargs, args))
+
+    def __matmul__(self, f: 'Function') -> 'Function':
+        def foo(*args):
+            mid = f(*args[:f.nargs])
+            return self(mid, *args[f.nargs:])
+
+        return WrappedFunction(foo, nargs=self.nargs - f.nargs + 1)
 
     def fmap(self, f: 'WrappedFunction') -> 'WrappedFunction':
         if not isinstance(f, WrappedFunction):
