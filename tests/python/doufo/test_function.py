@@ -1,4 +1,4 @@
-from doufo.function import PureFunction, func
+from doufo.function import Function, func
 from doufo.function import guess_nargs
 
 
@@ -6,7 +6,7 @@ def test_currying():
     def foo_(a, b, c):
         return a + b + c
 
-    foo = PureFunction(foo_)
+    foo = Function(foo_)
     f1 = foo(1)
     f2 = f1(2)
     v = f2(3)

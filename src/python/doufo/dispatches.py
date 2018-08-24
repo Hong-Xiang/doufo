@@ -1,4 +1,4 @@
-from .function import PureFunction, guess_nargs
+from .function import Function, guess_nargs
 from functools import wraps
 from multipledispatch import Dispatcher
 import functools
@@ -17,7 +17,7 @@ def singledispatch(*, nargs=None):
     return wrapper
 
 
-class SingleDispatchFunction(PureFunction):
+class SingleDispatchFunction(Function):
     def __init__(self, f, nargs=None):
         if nargs is None:
             nargs = guess_nargs(f)
@@ -38,7 +38,7 @@ def multidispatch(*, nargs=None):
     return wrapper
 
 
-class MultiDispatchFunction(PureFunction):
+class MultiDispatchFunction(Function):
     def __init__(self, f, *, nargs=None):
         nargs = nargs or guess_nargs(f)
         super().__init__(Dispatcher(f.__name__), nargs=nargs)
