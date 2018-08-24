@@ -1,17 +1,23 @@
 from doufo import singledispatch
 import numpy as np
+import tensorflow as tf
 
-__all__ = ['sum_', 'norm', 'is_scalar']
+__all__ = ['sum_', 'norm', 'is_scalar', 'argmax']
 
 
-@singledispatch()
-def sum_(t):
-    raise TypeError
+@singledispatch(nargs=2, nouts=1)
+def sum_(t, axis=None):
+    return t.fmap(lambda _: sum_(_, axis))
 
 
 @sum_.register(np.ndarray)
-def _(t):
-    return np.sum(t)
+def _(t, axis):
+    return np.sum(t, axis=axis)
+
+
+@sum_.register(tf.Tensor)
+def _(x, axis):
+    return tf.reduce_sum(x, axis=axis)
 
 
 @singledispatch()
@@ -37,3 +43,18 @@ def t(t):
 @is_scalar.register(np.ndarray)
 def _(t):
     return np.isscalar(t)
+
+
+@singledispatch(nargs=2, nouts=1)
+def argmax(t, axis):
+    return t.fmap(lambda _: argmax(_, axis))
+
+
+@argmax.register(np.ndarray)
+def _(x, axis):
+    return np.argmax(x, axis=axis)
+
+
+@argmax.register(tf.Tensor)
+def _(x, axis):
+    return tf.argmax(x, axis=axis)
