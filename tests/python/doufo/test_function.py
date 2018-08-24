@@ -1,4 +1,4 @@
-from doufo.function import Function, func
+from doufo.function import WrappedFunction, Function, func
 from doufo.function import guess_nargs
 
 
@@ -6,7 +6,7 @@ def test_currying():
     def foo_(a, b, c):
         return a + b + c
 
-    foo = Function(foo_)
+    foo = WrappedFunction(foo_)
     f1 = foo(1)
     f2 = f1(2)
     v = f2(3)
@@ -45,7 +45,6 @@ def test_func_nargs_not_inferable_with_parameter():
     def foo(*args):
         return sum(args)
 
-    # print(guess_starargs(foo(2)(3)))
     assert foo(2)(3)(4)(5) == 14
 
 

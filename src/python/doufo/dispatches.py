@@ -1,4 +1,4 @@
-from .function import Function, guess_nargs
+from .function import WrappedFunction, guess_nargs
 from functools import wraps
 from multipledispatch import Dispatcher
 import functools
@@ -6,22 +6,20 @@ import functools
 __all__ = ['singledispatch', 'SingleDispatchFunction', 'multidispatch', 'MultiDispatchFunction']
 
 
-def singledispatch(*, nargs=None):
+def singledispatch(*, nargs=None, nouts=None):
     """
     decorate of both functools.singledispatch and func
     """
 
     def wrapper(f):
-        return wraps(f)(SingleDispatchFunction(f, nargs=nargs))
+        return wraps(f)(SingleDispatchFunction(f, nargs=nargs, nouts=None))
 
     return wrapper
 
 
-class SingleDispatchFunction(Function):
-    def __init__(self, f, nargs=None):
-        if nargs is None:
-            nargs = guess_nargs(f)
-        super().__init__(functools.singledispatch(f), nargs=nargs)
+class SingleDispatchFunction(WrappedFunction):
+    def __init__(self, f, nargs=None, nouts=None):
+        super().__init__(functools.singledispatch(f), nargs=nargs if nargs is not None else guess_nargs(f), nouts=nouts)
         self.registered = {}
 
     def register(self, *args, **kwargs):
@@ -31,17 +29,16 @@ class SingleDispatchFunction(Function):
         return result
 
 
-def multidispatch(*, nargs=None):
+def multidispatch(*, nargs=None, nouts=None):
     def wrapper(f):
-        return wraps(f)(MultiDispatchFunction(f, nargs=nargs))
+        return wraps(f)(MultiDispatchFunction(f, nargs=nargs, nouts=nouts))
 
     return wrapper
 
 
-class MultiDispatchFunction(Function):
-    def __init__(self, f, *, nargs=None):
-        nargs = nargs or guess_nargs(f)
-        super().__init__(Dispatcher(f.__name__), nargs=nargs)
+class MultiDispatchFunction(WrappedFunction):
+    def __init__(self, f, *, nargs=None, nouts=None):
+        super().__init__(Dispatcher(f.__name__), nargs=nargs if nargs is not None else guess_nargs(f), nouts=nouts)
         if self.nargs is None:
             raise TypeError("Explict nargs is required for multidispatch.")
         self.register(*([object] * self.nargs))(f)
