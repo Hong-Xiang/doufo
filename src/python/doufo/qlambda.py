@@ -3,13 +3,13 @@ Quick lambda creator, useful for use in fmap, filter, etc.
 
 e.g. List([1,2]).fmap(x + 1)
 """
-from doufo import PureFunction, identity, Functor, FunctorArithmeticMixin
+from doufo import Function, identity, Functor, FunctorArithmeticMixin
 import operator
 
 __all__ = ['QuickLambda', 'x']
 
 
-class QuickLambda(PureFunction, FunctorArithmeticMixin):
+class QuickLambda(Function, FunctorArithmeticMixin):
     """
     QuickLambda constructor.
     """
