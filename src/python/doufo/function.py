@@ -42,7 +42,7 @@ class Function(Callable[[A], B], Monad[Callable[[A], B]]):
     def fmap(self, f: 'Function') -> 'Function':
         if not isinstance(f, Function):
             f = Function(f)
-        return Function(lambda *args, **kwargs: self.unbox(self.__call__(*args, **kwargs)), nargs=f.nargs)
+        return Function(lambda *args, **kwargs: f(self.__call__(*args, **kwargs)), nargs=f.nargs)
 
     def __matmul__(self, f: 'Function') -> 'Function':
         def foo(*args):
