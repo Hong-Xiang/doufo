@@ -1,7 +1,4 @@
 from doufo import Functor
-from collections.abc import Iterable
-from abc import abstractproperty, ABC
-import numpy as np
 from typing import TypeVar
 import functools
 import operator
@@ -13,20 +10,15 @@ from .unary_with_args import *
 
 from doufo.tensor import (to_tensor_like, as_scalar, is_scalar, shape, ndim, sum_, shape, argmax)
 
-T = TypeVar('T') # TensorLike
+T = TypeVar('T')  # TensorLike
 
-from numba import jit
+
 
 class Tensor(Functor[T], FunctorArithmeticMixin):
     # HACK for radd to work
     __array_priority__ = 16
 
     def __init__(self, data):
-        # if isinstance(data, np.ndarray):
-        #     self.data = data
-        # elif isinstance(data, Tensor):
-        #     self.data = data.data
-        # else:
         self.data = to_tensor_like(data)
 
     def unbox(self):
@@ -56,27 +48,20 @@ class Tensor(Functor[T], FunctorArithmeticMixin):
         def _assign(t):
             t[s] = v
             return t
+
         return self.fmap(_assign)
 
     def __iter__(self):
         return (Tensor(x) if not is_scalar(x) else as_scalar(x) for x in self.unbox())
-        # return iter(self.unbox())
-        # @jit
-        # def iters():
-            # return (Tensor(x) for x in self.unbox())
-        # return iters()
-        # return map(Tensor, self.unbox())
-
-        
 
     def fmap(self, f):
         return Tensor(f(self.unbox()))
 
     def __matmul__(self, t):
-        return matmul(self , t)
+        return matmul(self, t)
 
     def __rmatmaul__(self, t):
-        return matmul(t , self)
+        return matmul(t, self)
 
     def __len__(self):
         return len(self.unbox())
@@ -95,44 +80,51 @@ def is_result_scalar(result, s):
         return True
     return False
 
+
 @square.register(Tensor)
 def _(t):
     return t.fmap(square)
+
 
 @unit.register(Tensor)
 def _(t):
     return t.fmap(unit)
 
+
 @abs_.register(Tensor)
 def _(t):
     return t.fmap(abs_)
+
 
 @as_scalar.register(Tensor)
 def _(t):
     return as_scalar(t.unbox())
 
+
 @to_tensor_like.register(Tensor)
 def _(t):
     return to_tensor_like(t.unbox())
+
 
 @is_scalar.register(Tensor)
 def _(t):
     return is_scalar(t.unbox())
 
+
 @sum_.register(Tensor)
 def _(t):
     return sum_(t.unbox())
+
 
 @ndim.register(Tensor)
 def _(t):
     return ndim(t.unbox())
 
-import numpy as np
 
-# @transpose.register(Tensor)
-# def _(t, perm=None):
-    # return t.fmap(lambda t: transpose(t, perm))
-    # return Tensor(np.transpose(t.unbox(), perm))
+@transpose.register(Tensor)
+def _(t, perm=None):
+    return t.fmap(lambda t: transpose(t, perm))
+
 
 @norm.register(Tensor)
 def _(t, p=2.0):
@@ -143,10 +135,16 @@ def _(t, p=2.0):
 def _(x, y):
     return all_close(x.unbox(), Tensor(y).unbox())
 
+
 @shape.register(Tensor)
 def _(t):
     return shape(t.unbox())
 
+
 @argmax.register(Tensor)
 def _(t):
     return argmax(t.unbox())
+
+@flatten.register(Tensor)
+def _(x, batch_dim=0):
+    return x.fmap(lambda _: flatten(_, batch_dim))

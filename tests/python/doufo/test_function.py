@@ -84,6 +84,14 @@ def test_guess_nargs():
     assert guess_nargs(foo) == 2
 
 
+def test_nouts():
+    @func(nargs=2, nouts=2)
+    def foo(a, b):
+        return a + 1, b + 1
+
+    assert (foo >> foo)(1, 2) == (3, 4)
+
+
 def test_guess_nargs_with_defaults():
     def foo(a, b=1):
         pass

@@ -12,7 +12,7 @@ def singledispatch(*, nargs=None, nouts=None):
     """
 
     def wrapper(f):
-        return wraps(f)(SingleDispatchFunction(f, nargs=nargs, nouts=None))
+        return wraps(f)(SingleDispatchFunction(f, nargs=nargs, nouts=nouts))
 
     return wrapper
 

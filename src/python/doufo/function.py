@@ -52,16 +52,21 @@ class WrappedFunction(Function):
     def __call__(self, *args, **kwargs):
         if len(args) == 0 and len(kwargs) == 0:
             return self.f()
-        if nargs_left(self.nargs, args) == 0:
+        nargs_left_ = nargs_left(self.nargs, args)
+        if nargs_left_ is None or nargs_left_ > 0:
+            return WrappedFunction(partial(self.unbox(), *args, **kwargs), nargs=nargs_left(self.nargs, args))
+        if nargs_left_ == 0:
             return self.f(*args, **kwargs)
-        return WrappedFunction(partial(self.unbox(), *args, **kwargs), nargs=nargs_left(self.nargs, args))
+        if nargs_left_ < 0:
+            result = self.f(*args[:self.nargs], **kwargs)
+            if isinstance(result, tuple) and self.nouts > 0:
+                return (*result, *args[self.nargs:])
+            else:
+                return result, args[self.nargs:]
+        raise ValueError("Invalid left args, {nargs_left}.")
 
     def __matmul__(self, f: 'Function') -> 'Function':
-        def foo(*args):
-            mid = f(*args[:f.nargs])
-            return self(mid, *args[f.nargs:])
-
-        return WrappedFunction(foo, nargs=self.nargs - f.nargs + 1)
+        return self.fmap(f)
 
     def fmap(self, f: 'WrappedFunction') -> 'WrappedFunction':
         if not isinstance(f, WrappedFunction):
@@ -86,7 +91,7 @@ class WrappedFunction(Function):
         return self._nouts
 
 
-def nargs_left(nargs, args):
+def nargs_left(nargs, args) -> Optional[int]:
     if nargs is None:
         return None
     return nargs - len(args)
