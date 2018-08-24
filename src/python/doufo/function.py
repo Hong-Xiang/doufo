@@ -22,9 +22,8 @@ T = TypeVar('T')
 
 
 class Function(Callable, Monad[Callable]):
-    @abstractmethod
     def __call__(self, *args, **kwargs):
-        pass
+        return self.unbox(*args, **kwargs)
 
     def bind(self, f: 'Function') -> 'Function':
         return f.fmap(self)
