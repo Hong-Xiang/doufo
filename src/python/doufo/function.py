@@ -29,12 +29,12 @@ class Function(Callable[[A], B], Monad[Callable[[A], B]]):
         self._nouts = nouts
 
     def __call__(self, *args, **kwargs) -> Union['Function', B]:
+        # HACK force call with syntax f()
         if len(args) == 0 and len(kwargs) == 0:
             return self.f()
-        if self.nargs is None or len(args) < self.nargs:
-            nargs_post = self.nargs - len(args) if self.nargs is not None else None
-            return Function(partial(self.unbox(), *args, **kwargs), nargs=nargs_post)
-        return self.f(*args, **kwargs)
+        if nargs_left(self.nargs, args) == 0:
+            return self.f(*args, **kwargs)
+        return Function(partial(self.unbox(), *args, **kwargs), nargs=nargs_left(self.nargs, args))
 
     def bind(self, f: 'Function') -> 'Function':
         return self.fmap(f)
@@ -48,6 +48,7 @@ class Function(Callable[[A], B], Monad[Callable[[A], B]]):
         def foo(*args):
             mid = f(*args[:f.nargs])
             return self(mid, *args[f.nargs:])
+
         return Function(foo, nargs=self.nargs - f.nargs + 1)
 
     def unbox(self) -> Callable[..., B]:
@@ -60,6 +61,12 @@ class Function(Callable[[A], B], Monad[Callable[[A], B]]):
     @property
     def nouts(self):
         return self._nouts
+
+
+def nargs_left(nargs, args):
+    if nargs is None:
+        return None
+    return nargs - len(args)
 
 
 def guess_nargs(f):
