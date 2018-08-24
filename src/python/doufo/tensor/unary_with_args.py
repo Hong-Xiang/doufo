@@ -58,3 +58,25 @@ def _(x, batch_dim=0):
         return x.reshape([x.shape[0], -1])
     raise NotImplementedError(
         "Flatten for numpy Tensor with batch_dim != 0 is not implemented yet")
+
+
+@singledispatch(nargs=2, nouts=1)
+def one_hot(x, nb_classes):
+    return x.fmap(lambda _: one_hot(_, nb_classes))
+
+
+@one_hot.register(np.ndarray)
+def _(x, nb_classes):
+    result = np.zeros(list(x.shape) + [nb_classes])
+    result[np.arange(x.size), x] = 1
+    return result
+
+
+@one_hot.register(cntk.Variable)
+def _(x, nb_classes):
+    return cntk.one_hot(x, nb_classes)
+
+
+@one_hot.register(tf.Tensor)
+def _(x, nb_classes):
+    return tf.keras.backend.one_hot(x, nb_classes)
