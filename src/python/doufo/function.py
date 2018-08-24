@@ -43,6 +43,8 @@ class Function(Callable, Monad[Callable]):
         pass
 
 
+# TODO refine nargs, nouts, fmap, __call__ logic
+
 class WrappedFunction(Function):
     def __init__(self, f, *, nargs=None, nouts=None):
         self.f = f
@@ -62,7 +64,7 @@ class WrappedFunction(Function):
             if isinstance(result, tuple) and self.nouts > 0:
                 return (*result, *args[self.nargs:])
             else:
-                return result, args[self.nargs:]
+                return (result, *args[self.nargs:])
         raise ValueError("Invalid left args, {nargs_left}.")
 
     def __matmul__(self, f: 'Function') -> 'Function':
@@ -76,7 +78,11 @@ class WrappedFunction(Function):
                 return self.__call__(f(*args, **kwargs))
         else:
             def target(*args, **kwargs):
-                return self.__call__(*f(*args, **kwargs))
+                result = f(*args, **kwargs)
+                if self.nargs is None or f.nouts <= self.nargs:
+                    return self.__call__(*result)
+                else:
+                    return (self.__call__(*result[:self.nargs]), *result[self.nargs:])
         return WrappedFunction(target, nargs=f.nargs, nouts=self.nouts)
 
     def unbox(self):
