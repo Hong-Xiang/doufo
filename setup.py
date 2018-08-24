@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name='doufo',
-    version='0.0.1',
+    version='0.0.2',
     description='Data Processing Library in functional style.',
     url='https://github.com/Hong-Xiang/doufo',
     author='Hong Xiang',

@@ -1,21 +1,18 @@
 """
-PureFunction represents a pure function.
-PureFunction is also a functor that can map function f on its function self
+Function is a functor that can map function f on its function self
 to generate a new function. Thus, a series of functions can be composited by 
 generating new PureFunction instance and finally get a complex function.
 """
 
-from doufo.control import Monad, Functor
-from functools import partial, wraps
-import functools
 import inspect
-from typing import Callable, Union, Generic, cast, Any, TypeVar
-from abc import ABCMeta, abstractmethod
+from functools import partial, wraps
+from typing import Callable, Union, cast
+
+from doufo.control import Monad
 
 __all__ = ['Function', 'func', 'identity', 'flip']
 
 from typing import TypeVar
-from numba import jit
 
 A = TypeVar('A')
 B = TypeVar('B')
