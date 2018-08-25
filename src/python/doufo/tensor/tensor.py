@@ -8,10 +8,9 @@ from .unary import *
 from .unary_reduce import *
 from .unary_with_args import *
 
-from doufo.tensor import (to_tensor_like, as_scalar, is_scalar, shape, ndim, sum_, shape, argmax)
+from doufo.tensor import (to_tensor_like, as_scalar, is_scalar, shape, ndim, sum_, shape, argmax, matmul)
 
 T = TypeVar('T')  # TensorLike
-
 
 
 class Tensor(Functor[T], FunctorArithmeticMixin):
@@ -45,11 +44,7 @@ class Tensor(Functor[T], FunctorArithmeticMixin):
         return result if not is_result_scalar(result, s) else as_scalar(result)
 
     def __setitem__(self, s, v):
-        def _assign(t):
-            t[s] = v
-            return t
-
-        return self.fmap(_assign)
+        self.unbox()[s] = v
 
     def __iter__(self):
         return (Tensor(x) if not is_scalar(x) else as_scalar(x) for x in self.unbox())
@@ -145,6 +140,12 @@ def _(t):
 def _(t):
     return argmax(t.unbox())
 
+
 @flatten.register(Tensor)
 def _(x, batch_dim=0):
     return x.fmap(lambda _: flatten(_, batch_dim))
+
+
+@matmul.register(Tensor, Tensor)
+def _(x, y):
+    return x.fmap(lambda _: matmul(_, y.unbox()))

@@ -4,7 +4,7 @@ import tensorflow as tf
 import cntk
 from doufo import singledispatch
 
-__all__ = ['transpose', 'norm', 'flatten', 'one_hot']
+__all__ = ['transpose', 'norm', 'flatten', 'one_hot', 'split']
 
 
 @singledispatch(nargs=2, nouts=1)
@@ -22,7 +22,7 @@ def _(t, perm=None):
     return tf.transpose(t, perm)
 
 
-@singledispatch(nargs=2, nouts=1)
+@singledispatch(nouts=1)
 def norm(t, p=2.0):
     raise TypeError()
 
@@ -82,3 +82,8 @@ def _(t, nb_classes):
 @one_hot.register(tf.Tensor)
 def _(t, nb_classes):
     return tf.keras.backend.one_hot(t, nb_classes)
+
+
+@singledispatch(nargs=4, nouts=1)
+def split(t, nb_partition, id_partition, axis=0):
+    raise NotImplementedError

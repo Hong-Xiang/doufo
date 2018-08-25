@@ -1,8 +1,10 @@
-from doufo import singledispatch
+from doufo import singledispatch, multidispatch
 from doufo.utils import method_not_support_msg
 import numpy as np
+import tensorflow as tf
+from .unary_with_args import norm
 
-__all__ = ['all_close', 'matmul']
+__all__ = ['all_close', 'matmul', 'project']
 
 
 @singledispatch()
@@ -21,6 +23,19 @@ def _(x, y):
     return abs(x - y) < 1e-7
 
 
-@singledispatch()
+@multidispatch(nargs=2, nouts=1)
 def matmul(x, y):
-    raise TypeError
+    return x @ y
+
+
+@matmul.register(tf.SparseTensor, tf.Tensor)
+def _(x, y):
+    return tf.sparse_tensor_dense_matmul(x, y)
+
+
+@multidispatch(nargs=2, nouts=1)
+def project(v, n):
+    """
+    Project Vector v onto plane with normal vector n.
+    """
+    return v - matmul(v, n) * n / (norm(n) ** 2.0)
