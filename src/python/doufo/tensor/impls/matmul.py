@@ -9,6 +9,13 @@ def _(x, y):
     return x.unbox() @ y.unbox()
 
 
+@matmul.register(Vector, np.ndarray)
+def _(x, y):
+    if y.ndim <= 1:
+        return x.unbox() @ y
+    return x.fmap(lambda _: matmul(_, y))
+
+
 @matmul.register(Matrix, Vector)
 def _(x, y):
     return y.fmap(lambda _: matmul(x.unbox(), _))
@@ -38,9 +45,11 @@ def _(x, y):
 def _(x, y):
     return y.fmap(lambda _: matmul(x, _))
 
+
 @project.register(Vector, (Vector, np.ndarray))
 def _(v, n):
     return v.fmap(lambda _: project(_, n))
+
 
 def unfied_type(t):
     if ndim(t) == 1:
