@@ -251,20 +251,14 @@ def multidispatch(*, nargs=None, nouts=None):
     return wrapper
 
 
-# TODO refine nargs, nouts, fmap, __call__ logic
-
-
 @func()
 def flip(f: Callable) -> Function:
     """
     flip order of first two arguments to function.
     """
-    if isinstance(f, Function):
-        nargs, nouts, ndefs = f.nargs, f.nouts, f.ndefs
-    else:
-        nargs, nouts, ndefs = nargs(f), None, ndefs(f)
+    nargs_, nouts_, ndefs_ = nargs(f), nouts(f), ndefs(f)
     return WrappedFunction(lambda *args, **kwargs: f(args[1], args[0], *args[2:], **kwargs),
-                           nargs=nargs, nouts=nouts, ndefs=ndefs)
+                           nargs=nargs_, nouts=nouts_, ndefs=ndefs_)
 
 
 class FunctionWithTag(Function):
