@@ -7,7 +7,7 @@ from .unary_with_args import norm
 __all__ = ['all_close', 'matmul', 'project']
 
 
-@singledispatch()
+@singledispatch(nargs=2, nouts=1)
 def all_close(x, y):
     raise TypeError(method_not_support_msg('all_close', x))
 

@@ -15,7 +15,7 @@ from typing import TypeVar
 import re
 
 __all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction',
-           'multidispatch', 'MultiDispatchFunction']
+           'multidispatch', 'MultiDispatchFunction', 'tagfunc']
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -262,6 +262,55 @@ def flip(f: Callable) -> Function:
     if isinstance(f, Function):
         nargs, nouts, ndefs = f.nargs, f.nouts, f.ndefs
     else:
-        nargs, nouts, ndefs = guess_nargs(f), None, guess_ndefs(f)
+        nargs, nouts, ndefs = nargs(f), None, ndefs(f)
     return WrappedFunction(lambda *args, **kwargs: f(args[1], args[0], *args[2:], **kwargs),
                            nargs=nargs, nouts=nouts, ndefs=ndefs)
+
+
+class FunctionWithTag(Function):
+    def __init__(self, default_func, *, nargs=None, nouts=None, ndefs=None):
+        self.default_func = default_func
+        self._nargs = get_nargs(default_func, nargs)
+        self._nouts = nouts
+        self._ndefs = get_nargs(default_func, nouts)
+        self.methods = {}
+
+    def __getitem__(self, item):
+        return self.methods[item]
+
+    def register(self, tag):
+        def wrapper(f):
+            self.methods[tag] = f
+            return f
+
+        return wrapper
+
+    def __call__(self, *args, **kwargs):
+        return self.default_func(*args, **kwargs)
+
+    @property
+    def nargs(self):
+        return self._nargs
+
+    @property
+    def ndefs(self):
+        return self._ndefs
+
+    @property
+    def nouts(self):
+        return self._nouts
+
+    def fmap(self, f: 'WrappedFunction') -> 'WrappedFunction':
+        if not isinstance(f, WrappedFunction):
+            f = WrappedFunction(f)
+        return WrappedFunction(lambda *args, **kwargs: self(f(*args, **kwargs)), nargs=f.nargs, nouts=self.nouts)
+
+    def unbox(self):
+        return self.default_func
+
+
+def tagfunc(nargs=None, ndefs=None, nouts=None):
+    def wrapper(f):
+        return wraps(f)(FunctionWithTag(f, nargs=nargs, nouts=nouts, ndefs=ndefs))
+
+    return wrapper

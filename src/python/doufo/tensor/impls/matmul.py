@@ -51,29 +51,3 @@ def _(v, n):
     return v.fmap(lambda _: project(_, n))
 
 
-def unfied_type(t):
-    if ndim(t) == 1:
-        return Vector(t)
-    if ndim(t) == 2:
-        return Matrix(t)
-    return Tensor(t)
-
-
-def vec_vec(x, y):
-    return as_scalar(x.unbox() @ y.unbox())
-
-
-def vec_mat(x, y):
-    return Vector(x.unbox() @ y.unbox())
-
-
-def mat_vec(x, y):
-    return Vector(x.unbox() @ y.unbox())
-
-
-def mat_mat(x, y):
-    return Matrix(x.unbox() @ y.unbox())
-
-
-def ten_ten(x, y):
-    return Tensor(x.unbox() @ y.unbox())
