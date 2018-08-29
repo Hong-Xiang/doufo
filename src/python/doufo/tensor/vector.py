@@ -2,33 +2,21 @@ from .tensor import Tensor
 from typing import TypeVar
 from .binary import matmul
 from doufo.tensor import as_scalar
+from doufo import multidispatch
+from typing import Union
+import numpy as np
 
 T = TypeVar('T')
 
-__all__ = ['Vector', 'project']
+__all__ = ['Vector']
 
 
 class Vector(Tensor[T]):
     def __init__(self, data):
         super().__init__(data)
-        # if self.ndim > 1:
-        # raise ValueError(f"Vector must be 1 dimensional or scalar, got {self.ndim}.")
 
     def fmap(self, f):
         return Vector(f(self.unbox()))
-
-    # def __matmul__(self, t):
-    #     return matmul(self, t)
-    #     from .matrix import Matrix
-    #     from dxl.function.tensor import transpose
-    #     # HACK for v @ t.T
-    #     if len(t.shape) == 2 and t.shape[0] == 1 and t.shape[1] == self.size:
-    #         return self @ transpose(t)
-    #     return scalar_or_vector_of(Tensor(self) @ Tensor(t), t)
-
-    # def __rmatmul__(self, t):
-    #     from .matrix import Matrix
-    #     return scalar_or_vector_of(Tensor(t) @ Tensor(self), t)
 
     @property
     def x(self):
@@ -48,7 +36,7 @@ class Vector(Tensor[T]):
         n: position of "hot"
         l: lenght of vector
         """
-        v = [0.0]*l
+        v = [0.0] * l
         v[n] = 1.0
         return Vector(v)
 
@@ -61,9 +49,4 @@ def is_result_scalar(t):
     return isinstance(t, Vector)
 
 
-def project(v: Vector, n: Vector) -> Vector:
-    """
-    Project Vector v onto plane with normal vector n.
-    """
-    v, n = Vector(v), Vector(n)
-    return v - v @ n * n / (n @ n)
+

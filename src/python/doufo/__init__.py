@@ -4,7 +4,6 @@ from .control import *
 from .mixins import *
 from .monoid import Monoid
 from .function import *
-from .dispatches import *
 from .list import *
 from .iterable import *
 from .maybe import Maybe
