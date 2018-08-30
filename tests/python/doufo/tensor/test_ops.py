@@ -37,14 +37,23 @@ def test_one_hot_npy(one_hot_result):
     assert all_close(one_hot(np.array([0, 1, 2]), 4), one_hot_result)
 
 
-def test_cntk(one_hot_result):
+@pytest.mark.skip("slow")
+def test_one_hot_cntk(one_hot_result):
     x = C.input_variable([], np.float32)
     y = one_hot(x, 4)
     result = y.eval({x: np.array([0, 1, 2], np.float32)})
     assert all_close(result, one_hot_result)
 
 
-def test_tensorflow(tensorflow_test_session, one_hot_result):
+def test_one_hot_tensorflow(tensorflow_test_session, one_hot_result):
     x = tf.constant([0, 1, 2])
     y = one_hot(x, 4)
     assert all_close(tensorflow_test_session.run(y), one_hot_result)
+
+
+def test_sum_numpy():
+    assert sum_(np.array([1, 2, 3])) == 6
+
+
+def test_sum_tensorflow(tensorflow_test_session):
+    assert tensorflow_test_session.run(sum_(tf.constant([1, 2, 3]))) == 6

@@ -5,18 +5,18 @@ import tensorflow as tf
 __all__ = ['sum_', 'norm', 'is_scalar', 'argmax']
 
 
-@singledispatch(nargs=2, nouts=1)
+@singledispatch(nargs=2, ndefs=1, nouts=1)
 def sum_(t, axis=None):
     return t.fmap(lambda _: sum_(_, axis))
 
 
 @sum_.register(np.ndarray)
-def _(t, axis):
+def _(t, axis=None):
     return np.sum(t, axis=axis)
 
 
 @sum_.register(tf.Tensor)
-def _(x, axis):
+def _(x, axis=None):
     return tf.reduce_sum(x, axis=axis)
 
 
