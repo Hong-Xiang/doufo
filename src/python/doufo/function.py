@@ -270,6 +270,8 @@ class FunctionWithTag(Function):
         self.methods = {}
 
     def __getitem__(self, item):
+        if item is None and not item in self.methods:
+            return self.default_func
         return self.methods[item]
 
     def register(self, tag):
