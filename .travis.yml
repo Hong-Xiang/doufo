@@ -3,6 +3,7 @@ python:
   - "3.6"
 before_install:
   - sudo apt-get install -y openmpi-bin
+  - export PATH="/home/travis/virtualenv/python3.6/bin":$PATH
 install:
   - pip install tensorflow
   - pip install cntk
