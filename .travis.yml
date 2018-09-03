@@ -3,11 +3,20 @@ python:
   - "3.6"
 before_install:
   - sudo apt-get install -y openmpi-bin
-  - export PATH="/home/travis/virtualenv/python3.6/bin":$PATH
-  - export PATH="/home/travis/virtualenv/python3.6":$PATH
-  - export PATH="/home/travis/virtualenv":$PATH
-  - export PATH="/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages":$PATH
-  - export LD_LIBRARY_PATH="/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages":$LD_LIBRARY_PATH
+  - wget https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-1.10.3.tar.gz
+  - tar -xzvf ./openmpi-1.10.3.tar.gz
+  - cd openmpi-1.10.3
+  - ./configure --prefix=/usr/local/mpi
+  - make -j all
+  - sudo make install
+  - cd ..
+  - export PATH=/usr/local/mpi/bin:$PATH
+  - export LD_LIBRARY_PATH=/usr/local/mpi/lib:$LD_LIBRARY_PATH
+  #- export PATH="/home/travis/virtualenv/python3.6/bin":$PATH
+  #- export PATH="/home/travis/virtualenv/python3.6":$PATH
+  #- export PATH="/home/travis/virtualenv":$PATH
+  #- export PATH="/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages":$PATH
+  #- export LD_LIBRARY_PATH="/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages":$LD_LIBRARY_PATH
 install:
   - pip install tensorflow
   - pip install cntk
