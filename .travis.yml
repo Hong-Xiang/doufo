@@ -4,7 +4,7 @@ python:
 before_install:
   # - sudo apt-get install -y openmpi-bin
   - wget https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-1.10.3.tar.gz
-  - tar -xzvf ./openmpi-1.10.3.tar.gz
+  - tar -xzf ./openmpi-1.10.3.tar.gz
   - cd openmpi-1.10.3
   - ./configure -q --prefix=/usr/local/mpi
   - make -s -j all
