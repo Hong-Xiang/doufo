@@ -50,3 +50,7 @@ def test_getitem_slice_class():
 
 def test_head():
     assert head(List([1, 2])) == 1
+
+
+def test_filter():
+    assert List([1, 2, 3, 4, 5, 6]).filter(lambda x: x < 4) == [1, 2, 3]
