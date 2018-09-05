@@ -18,14 +18,13 @@ def _(xs, axis=0):
 
 @concat.register(List)
 def _(xs, axis=0):
-    if type(xs) != List:
-        raise ValueError('xs must be doufo.list.List obj.')
-    if type(xs[0]) == tf.Tensor:
-        return tf.concat(xs.unbox(), axis=axis)
-    if type(xs[0]) == np.ndarray:
-        return np.concatenate(xs.unbox(), axis=axis)
-    else:
-        res = List()
-        for item in xs:
-            res = res.extend(item)
-        return res
+    if xs is not None:
+        if all(map(lambda a: isinstance(a, tf.Tensor), xs)):
+            return tf.concat(xs.unbox(), axis=axis)
+        if all(map(lambda a: isinstance(a, np.ndarray), xs)):
+            return np.concatenate(xs.unbox(), axis=axis)
+        else:
+            res = List()
+            for item in xs:
+                res = res.extend(item)
+            return res
