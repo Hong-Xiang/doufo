@@ -9,7 +9,7 @@ __all__ = ['transpose', 'norm', 'flatten', 'one_hot', 'split']
 
 @singledispatch(nargs=2, nouts=1)
 def transpose(t, perm=None):
-    raise NotImplementedError()
+    raise NotImplementedError(f"No transpose implementation for {type(t)}")
 
 
 @transpose.register(np.ndarray)
@@ -18,6 +18,7 @@ def _(t, perm=None):
 
 
 @transpose.register(tf.Tensor)
+@transpose.register(tf.Variable)
 def _(t, perm=None):
     return tf.transpose(t, perm)
 
