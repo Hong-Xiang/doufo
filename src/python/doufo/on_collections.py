@@ -14,7 +14,7 @@ Example:
 ...
 """
 
-__all__ = ['take', 'head', 'concat', 'fzip', 'tail', 'flatten', 'concat']
+__all__ = ['take', 'head', 'concat', 'fzip', 'tail', 'flatten', 'concat', 'all_isinstance']
 
 T = TypeVar('T')
 
@@ -100,3 +100,8 @@ def _(xs: Tuple[Union[T, Any]]) -> Tuple[T]:
 def _(xs: Tuple[Union[T, Any]]) -> Tuple[T]:
     return tuple(concat([flatten(x) if isinstance(x, tuple) else (x,)
                          for x in xs], None))
+
+
+@singledispatch(nargs=2, nouts=1)
+def all_isinstance(xs, type_):
+    return all(map(lambda o: isinstance(o, type_), xs))
