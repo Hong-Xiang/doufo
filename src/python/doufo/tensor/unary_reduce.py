@@ -10,6 +10,11 @@ def sum_(t, axis=None):
     return t.fmap(lambda _: sum_(_, axis))
 
 
+@sum_.register(list)
+def _(t, axis=None):
+    return sum(t)
+
+
 @sum_.register(np.ndarray)
 def _(t, axis=None):
     return np.sum(t, axis=axis)

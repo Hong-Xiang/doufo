@@ -14,7 +14,7 @@ Example:
 ...
 """
 
-__all__ = ['take', 'head', 'concat', 'fzip', 'tail', 'flatten', 'concat', 'all_isinstance']
+__all__ = ['take', 'head', 'concat', 'fzip', 'tail', 'flatten', 'concat', 'all_isinstance', 'fmap']
 
 T = TypeVar('T')
 
@@ -105,3 +105,13 @@ def _(xs: Tuple[Union[T, Any]]) -> Tuple[T]:
 @singledispatch(nargs=2, nouts=1)
 def all_isinstance(xs, type_):
     return all(map(lambda o: isinstance(o, type_), xs))
+
+
+@singledispatch(nargs=2, nouts=1)
+def fmap(xs, f):
+    return xs.fmap(f)
+
+
+@fmap.register(list)
+def fmap(xs, f):
+    return [f(x) for x in xs]
