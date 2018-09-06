@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 from doufo.tensor import split, shape
 
 
@@ -19,3 +20,5 @@ def split_shape(shape, nb_partition, id_partition, axis):
     result = list(shape)
     result[axis] = shape[axis] // nb_partition
     return result
+
+

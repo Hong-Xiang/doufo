@@ -71,7 +71,7 @@ def _(t):
 
 @singledispatch()
 def unit(t):
-    raise TypeError
+    raise TypeError(f"{type(t)}")
 
 
 @unit.register(np.ndarray)

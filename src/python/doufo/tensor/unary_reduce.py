@@ -10,6 +10,11 @@ def sum_(t, axis=None):
     return t.fmap(lambda _: sum_(_, axis))
 
 
+@sum_.register(list)
+def _(t, axis=None):
+    return sum(t)
+
+
 @sum_.register(np.ndarray)
 def _(t, axis=None):
     return np.sum(t, axis=axis)
@@ -45,16 +50,16 @@ def _(t):
     return np.isscalar(t)
 
 
-@singledispatch(nargs=2, nouts=1)
-def argmax(t, axis):
+@singledispatch(nargs=2, nouts=1, ndefs=1)
+def argmax(t, axis=None):
     return t.fmap(lambda _: argmax(_, axis))
 
 
 @argmax.register(np.ndarray)
-def _(x, axis):
+def _(x, axis=None):
     return np.argmax(x, axis=axis)
 
 
 @argmax.register(tf.Tensor)
-def _(x, axis):
+def _(x, axis=None):
     return tf.argmax(x, axis=axis)
