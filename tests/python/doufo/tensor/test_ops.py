@@ -2,7 +2,7 @@ from doufo.tensor import *
 import numpy as np
 import tensorflow as tf
 import pytest
-import cntk as C
+
 
 
 @pytest.fixture()
@@ -57,3 +57,10 @@ def test_sum_numpy():
 
 def test_sum_tensorflow(tensorflow_test_session):
     assert tensorflow_test_session.run(sum_(tf.constant([1, 2, 3]))) == 6
+
+try:
+    import cntk as C
+except ImportError:
+    pass
+else:
+    pass
