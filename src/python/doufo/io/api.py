@@ -1,4 +1,4 @@
-from doufo.dispatches import singledispatch
+from doufo import singledispatch
 from typing import Type, Optional
 import numpy as np
 

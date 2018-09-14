@@ -1,12 +1,12 @@
-from doufo.function import Function, func
-from doufo.function import guess_nargs
+from doufo.function import WrappedFunction, Function, func, singledispatch, multidispatch, tagfunc
+from doufo.function import nargs, ndefs
 
 
 def test_currying():
     def foo_(a, b, c):
         return a + b + c
 
-    foo = Function(foo_)
+    foo = WrappedFunction(foo_)
     f1 = foo(1)
     f2 = f1(2)
     v = f2(3)
@@ -40,30 +40,12 @@ def test_func_nargs_none():
     assert foo(2)(3) == 5
 
 
-def test_func_nargs_not_inferable_with_parameter():
-    @func(4)
-    def foo(*args):
-        return sum(args)
-
-    # print(guess_starargs(foo(2)(3)))
-    assert foo(2)(3)(4)(5) == 14
-
-
 def test_func_not_inferable():
     @func()
     def foo(*args):
         return sum(args)
 
-    assert foo(2)(3)(4)(5)() == 14
-    assert foo(2)() == 2
-
-
-def test_func_nargs_not_inferable_without_parameter():
-    @func()
-    def foo(*args):
-        return sum(args)
-
-    assert foo(2)(3)(5)() == 10
+    assert foo(2) == 2
 
 
 def test_bind():
@@ -82,11 +64,80 @@ def test_guess_nargs():
     def foo(a, b):
         pass
 
-    assert guess_nargs(foo) == 2
+    assert nargs(foo) == 2
+
+
+def test_nouts():
+    @func(nargs=2, nouts=2)
+    def foo(a, b):
+        return a + 1, b + 1
+
+    assert (foo >> foo)(1, 2) == (3, 4)
 
 
 def test_guess_nargs_with_defaults():
     def foo(a, b=1):
         pass
 
-    assert guess_nargs(foo) == 1
+    assert nargs(foo) == 2
+    assert ndefs(foo) == 1
+
+
+def test_single_dispatch_construct():
+    @singledispatch()
+    def foo(a, b):
+        return a + b
+
+    @foo.register(int)
+    def _(a, b):
+        return a * b
+
+    @foo.register(str)
+    def _(a, b):
+        return a + b * 2
+
+    assert foo(3, 6) == 18
+    assert foo('1', '2') == '122'
+    assert foo([1], [2]) == [1, 2]
+
+
+def test_multidispatch():
+    @multidispatch()
+    def foo(a, b):
+        return a + b
+
+    @foo.register(int, int)
+    def _(a, b):
+        return a * b
+
+    @foo.register(str, str)
+    def _(a, b):
+        return a + b * 2
+
+    @foo.register(str, int)
+    def _(a, b):
+        return int(a) + b * 3
+
+    assert foo(3, 4) == 12
+    assert foo('1', '2') == '122'
+    assert foo('1', 3) == 10
+    assert foo([1], [2, 3]) == [1, 2, 3]
+
+
+def test_tagfunc():
+    @tagfunc()
+    def foo(a, b):
+        return a + b
+
+    @foo.register(int)
+    def _(a, b):
+        return a * b
+
+    @foo.register(str)
+    def _(a, b):
+        return a + b * 2
+
+    assert foo[int](3, 6) == 18
+    assert foo[str]('1', '2') == '122'
+    assert foo[str](3, 6) == 15
+    assert foo([1], [2]) == [1, 2]

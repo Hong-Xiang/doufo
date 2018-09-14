@@ -9,7 +9,7 @@ setup(
     license='Apache',
     packages=find_packages('src/python'),
     package_dir={'': 'src/python'},
-    install_requires=['attrs>=18.1', 'numpy'],
+    install_requires=['attrs>=18.1', 'numpy', 'multipledispatch'],
     scripts=[],
     zip_safe=False)
 

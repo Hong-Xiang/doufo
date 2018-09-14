@@ -28,5 +28,5 @@ def test_getitem_int3():
 	assert DummyTable([1, 2, 3], [3, 4])[:2] == [1, 2]
 
 
-def test_getitem_slice_class():
-	assert isinstance(DummyTable([1, 2, 3], [3, 4])[:2], Table)
+# def test_getitem_slice_class():
+# 	assert isinstance(DummyTable([1, 2, 3], [3, 4])[:2], Table)

@@ -1,4 +1,4 @@
-from doufo.dispatches import singledispatch
+from doufo import singledispatch
 
 
 def test_singledispatch():
