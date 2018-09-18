@@ -13,7 +13,7 @@ import functools
 from doufo.control import Monad
 from typing import TypeVar
 import re
-
+import traceback
 __all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction',
            'multidispatch', 'MultiDispatchFunction', 'tagfunc']
 
@@ -24,37 +24,75 @@ T = TypeVar('T')
 
 
 class Function(Callable, Monad[Callable]):
+    '''
+       Abstract class of a wrapped function. Note, it alse has Monad parent class to make it 
+       has methods such as fmap and ubox.
+       
+       Basically, a Function object acts as a normal function, but some cool features. 
+       : Function(Callable, Monad[Callable])
+    '''
     def __call__(self, *args, **kwargs):
+        '''
+            call an Function object by firstly unboxing it.
+
+            : __call__(self, *args, **kwargs)
+        '''
         return self.unbox()(*args, **kwargs)
 
     def bind(self, f: 'Function') -> 'Function':
+        '''
+
+            : bind(self, f: 'Function') -> 'Function'
+        '''
         return f.fmap(self)
 
     @abstractmethod
-    def fmap(self, f: Callable):
+    def fmap(self, f: Callable) -> Optional[Callable]:
+        '''
+            function mapping abstract
+
+            : fmap(self, f: Callable)
+        '''
         pass
 
     @abstractmethod
     def unbox(self) -> Callable:
+        '''
+            Unbox a bundled function
+
+            unbox(self) -> Callable
+        '''
         pass
 
     @property
     @abstractmethod
     def nargs(self) -> Optional[int]:
+        '''
+            number of positional arguments of a Function object
+        '''
         pass
 
     @property
     @abstractmethod
     def nouts(self) -> Optional[int]:
+        '''
+            number of outputs of a Function object
+        '''
         pass
 
     @property
     @abstractmethod
     def ndefs(self) -> Optional[int]:
+        '''
+            number of member functions of a Function object
+        '''
         pass
 
 
 def _nargs(f) -> Optional[int]:
+    '''
+        number of positional arguments values. Dynamically computed from the arguments attribute.
+    '''
     if isinstance(f, Function):
         return f.nargs
     spec = inspect.getfullargspec(f)
@@ -64,6 +102,9 @@ def _nargs(f) -> Optional[int]:
 
 
 def _ndefs(f):
+    '''
+        number of any default values for positional or keyword parameters
+    '''
     if isinstance(f, Function):
         return f.ndefs
     spec = inspect.getfullargspec(f)
@@ -73,6 +114,9 @@ def _ndefs(f):
 
 
 def _nouts(f):
+    '''
+        number of outputs
+    '''
     if isinstance(f, Function):
         return f.nouts
     return None
@@ -97,7 +141,13 @@ p_many = re.compile(r"[\w()]+ takes (\d+) positional arguments?: but (\d+) were 
 
 
 class WrappedFunction(Function):
+    '''
+        implementation of a function class
+    '''
     def __init__(self, f, *, nargs=None, nouts=None, ndefs=None):
+        '''
+            __init__(self, f, *, nargs=None, nouts=None, ndefs=None)
+        '''
         self.f = f
         self._nargs = get_nargs(f, nargs)
         self._nouts = nouts
@@ -124,8 +174,16 @@ class WrappedFunction(Function):
                 return (result, *args[self.nargs:])
             else:
                 raise e
+        except Exception as e:
+                traceback.print_exc()
+
 
     def fmap(self, f: 'WrappedFunction') -> 'WrappedFunction':
+        '''
+            function map for Wrapped Function. A forced transfermation to WrappedFunction would be applied.async def 
+
+            fmap(self, f: 'WrappedFunction') -> 'WrappedFunction'
+        '''
         if not isinstance(f, WrappedFunction):
             f = WrappedFunction(f)
         return WrappedFunction(lambda *args, **kwargs: self(f(*args, **kwargs)), nargs=f.nargs, nouts=self.nouts)
@@ -177,7 +235,9 @@ def nargs_left(nargs, ndefs, args) -> Optional[int]:
 
 def func(nargs: Optional[int] = None, nouts: Optional[int] = None, ndefs: Optional[int] = None):
     """
-    decorates normal function to Function with (optional) number of arguments and outputs.
+        decorates normal function to Function with (optional) number of arguments and outputs.
+
+        : func(nargs: Optional[int] = None, nouts: Optional[int] = None, ndefs: Optional[int] = None)
     """
     return lambda f: wraps(f)(WrappedFunction(f, nargs=nargs, nouts=nouts, ndefs=ndefs))
 
@@ -201,6 +261,9 @@ identity = WrappedFunction(lambda x: x, nargs=1, nouts=1, ndefs=0)
 
 
 class SingleDispatchFunction(WrappedFunction):
+    '''
+        dispatch for Wrapped Function, indicatd by the type of first argument
+    '''
     def __init__(self, f, nargs=None, nouts=None, ndefs=None):
         super().__init__(functools.singledispatch(f),
                          nargs=get_ndefs(f, nargs),
@@ -217,7 +280,7 @@ class SingleDispatchFunction(WrappedFunction):
 
 def singledispatch(*, nargs=None, nouts=None, ndefs=None):
     """
-    decorate of both functools.singledispatch and func
+        singledispatch decorate of both functools.singledispatch and func
     """
 
     def wrapper(f):
@@ -227,6 +290,9 @@ def singledispatch(*, nargs=None, nouts=None, ndefs=None):
 
 
 class MultiDispatchFunction(WrappedFunction):
+    '''
+        (Multi-) dispatch for Wrapped Function, indicatd by the types of positioned arguments
+    '''
     def __init__(self, f, *, nargs=None, nouts=None):
         super().__init__(Dispatcher(f.__name__),
                          nargs=get_nargs(f, nargs),
@@ -245,6 +311,9 @@ class MultiDispatchFunction(WrappedFunction):
 
 
 def multidispatch(*, nargs=None, nouts=None):
+    """
+        multidispatch decorate of both functools.singledispatch and func
+    """
     def wrapper(f):
         return wraps(f)(MultiDispatchFunction(f, nargs=nargs, nouts=nouts))
 
@@ -254,7 +323,7 @@ def multidispatch(*, nargs=None, nouts=None):
 @func()
 def flip(f: Callable) -> Function:
     """
-    flip order of first two arguments to function.
+        flip order of first two arguments to function.
     """
     nargs_, nouts_, ndefs_ = nargs(f), nouts(f), ndefs(f)
     return WrappedFunction(lambda *args, **kwargs: f(args[1], args[0], *args[2:], **kwargs),
@@ -262,6 +331,11 @@ def flip(f: Callable) -> Function:
 
 
 class FunctionWithTag(Function):
+    '''
+        implementation of a function class, taged by f[tag](*)
+        
+        tag is flexible, for example, it can be a other module
+    '''
     def __init__(self, default_func, *, nargs=None, nouts=None, ndefs=None):
         self.default_func = default_func
         self._nargs = get_nargs(default_func, nargs)
@@ -306,6 +380,9 @@ class FunctionWithTag(Function):
 
 
 def tagfunc(nargs=None, ndefs=None, nouts=None):
+    """
+        decorate of tagged function
+    """
     def wrapper(f):
         return wraps(f)(FunctionWithTag(f, nargs=nargs, nouts=nouts, ndefs=ndefs))
 
