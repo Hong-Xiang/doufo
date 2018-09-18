@@ -14,7 +14,11 @@ B = TypeVar('B')
 
 __all__ = ['Functor', 'Monad']
 
+
 class Functor(Generic[A], metaclass=ABCMeta):
+    """
+    a functor is
+    """
     @abstractmethod
     def fmap(self, f: Callable[[A], B]) -> 'Functor[B]':
         pass
@@ -27,6 +31,7 @@ class Functor(Generic[A], metaclass=ABCMeta):
 class Monad(Functor[A]):
     """
     """
+
     def __rshift__(self, f: Callable[[A], 'Monad[B]']) -> 'Monad[B]':
         """ Alias to bind """
         return self.bind(f)
@@ -38,5 +43,3 @@ class Monad(Functor[A]):
     @abstractmethod
     def bind(self, f: Callable[[A], 'Monad[B]']) -> 'Monad[B]':
         pass
-
-
