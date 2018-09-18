@@ -1,0 +1,52 @@
+src
+└── python
+    └── doufo
+        ├── collections
+        │   ├── composite.py
+        │   ├── concatenate.py
+        │   ├── dataclasses_.py
+        │   ├── dict.py
+        │   ├── foldable.py
+        │   ├── __init__.py
+        │   ├── iterator.py
+        │   └── table.py
+        ├── control.py
+        ├── convert.py
+        ├── _dataclass.py
+        ├── function.py
+        ├── __init__.py
+        ├── io
+        │   ├── api.py
+        │   ├── data_class_fs.py
+        │   └── __init__.py
+        ├── iterable.py
+        ├── list.py
+        ├── maybe.py
+        ├── mixins.py
+        ├── monoid.py
+        ├── on_collections.py
+        ├── pair.py
+        ├── __pycache__
+        ├── qlambda.py
+        ├── tensor
+        │   ├── backends.py
+        │   ├── binary.py
+        │   ├── construct.py
+        │   ├── impls
+        │   │   ├── construct.py
+        │   │   ├── __init__.py
+        │   │   ├── matmul.py
+        │   │   └── unary.py
+        │   ├── __init__.py
+        │   ├── matrix.py
+        │   ├── tensor.py
+        │   ├── unary.py
+        │   ├── unary_reduce.py
+        │   ├── unary_with_args.py
+        │   └── vector.py
+        ├── tests
+        │   ├── __init__.py
+        │   └── tensor.py
+        └── utils.py
+
+8 directories, 41 files
