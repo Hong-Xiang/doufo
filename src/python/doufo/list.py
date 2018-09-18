@@ -14,7 +14,7 @@ __all__ = ['List']
 
 
 class List(UserList, Sequence[T], Functor[T]):
-    def __init__(self, data):
+    def __init__(self, data=None):
         if isinstance(data, List):
             super().__init__(data.unbox())
         else:
@@ -43,3 +43,7 @@ class List(UserList, Sequence[T], Functor[T]):
 
     def zip(self, xs: 'List[B]') -> 'List[Tuple[T, B]]':
         return List([(x, y) for x, y in zip(self, xs)])
+
+    def filter(self, f):
+        return List([x for x in self.unbox() if f(x) is True])
+
