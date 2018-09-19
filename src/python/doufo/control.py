@@ -17,10 +17,18 @@ __all__ = ['Functor', 'Monad']
 
 class Functor(Generic[A], metaclass=ABCMeta):
     """
-    a functor is basic class supporting fmap and unbox method.
-    **fmap()**: is a method aiming to process the boxed data type(eg.a type that inherits from Functor)
-    and to map it to operations that only support basic types.
-    **unbox()**: is a method to get the raw data(maybe basic types) from a boxed data type.
+    Functor class is the abstract base class of all functors, which defines a set of \
+    functions those satify the properties of functors, who transfer a Category to \
+    another Category:
+    A functor F has to provide the capablitities:
+    1. morphism from A to F[A]
+    2. morphism form f: A->B to F[f]: F[A]->F[B]
+    In fact, the method 'map' is to provide the capablity
+    -----------------------------------------------------------------------
+    A:C
+    F[A]:D
+    f:A->B
+    map(f): F[A]->F[B]
     """
 
     @abstractmethod
@@ -34,6 +42,20 @@ class Functor(Generic[A], metaclass=ABCMeta):
 
 class Monad(Functor[A]):
     """
+    A monad is a functor who provide one more capablity, which is bind
+    A monad has to provide:
+    1. morphism from A to M[A]
+    2. morphism form f: A->B to M[f]: M[A]->M[B]
+    3. flatten: M[M[A]] -> M[A]
+    'flatMap' is flatten&Map indeed.
+    -----------------------------------------------------------------------
+    A:C
+    M[A]:D
+    f:A->B
+    map(M): M[A]->M[B]
+    g:A->M[B]
+    flatMap(g):M[A]->M[B]
+    flatten:M[M[A]]->M[A]
     """
 
     def __rshift__(self, f: Callable[[A], 'Monad[B]']) -> 'Monad[B]':

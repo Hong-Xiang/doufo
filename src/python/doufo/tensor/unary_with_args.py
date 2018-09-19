@@ -1,7 +1,7 @@
 from functools import partial
 import numpy as np
 import tensorflow as tf
-import cntk
+
 from doufo import singledispatch
 
 __all__ = ['transpose', 'norm', 'flatten', 'one_hot', 'split']
@@ -9,7 +9,7 @@ __all__ = ['transpose', 'norm', 'flatten', 'one_hot', 'split']
 
 @singledispatch(nargs=2, nouts=1)
 def transpose(t, perm=None):
-    raise NotImplementedError()
+    raise NotImplementedError(f"No transpose implementation for {type(t)}")
 
 
 @transpose.register(np.ndarray)
@@ -18,6 +18,7 @@ def _(t, perm=None):
 
 
 @transpose.register(tf.Tensor)
+@transpose.register(tf.Variable)
 def _(t, perm=None):
     return tf.transpose(t, perm)
 
@@ -47,11 +48,6 @@ def _(t, batch_dim=0):
     return tf.keras.layers.Flatten()(t)
 
 
-@flatten.register(cntk.Variable)
-def _(t, batch_dim=0):
-    return cntk.squeeze(cntk.flatten(t, axis=batch_dim))
-
-
 @flatten.register(np.ndarray)
 def _(t, batch_dim=0):
     if batch_dim == 0:
@@ -74,11 +70,6 @@ def _(t, nb_classes):
     return result
 
 
-@one_hot.register(cntk.Variable)
-def _(t, nb_classes):
-    return cntk.one_hot(t, nb_classes)
-
-
 @one_hot.register(tf.Tensor)
 def _(t, nb_classes):
     return tf.keras.backend.one_hot(t, nb_classes)
@@ -87,3 +78,18 @@ def _(t, nb_classes):
 @singledispatch(nargs=4, nouts=1)
 def split(t, nb_partition, id_partition, axis=0):
     raise NotImplementedError
+
+
+try:
+    import cntk
+except ImportError:
+    pass
+else:
+    @flatten.register(cntk.Variable)
+    def _(t, batch_dim=0):
+        return cntk.squeeze(cntk.flatten(t, axis=batch_dim))
+
+
+    @one_hot.register(cntk.Variable)
+    def _(t, nb_classes):
+        return cntk.one_hot(t, nb_classes)
