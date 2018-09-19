@@ -17,8 +17,12 @@ __all__ = ['Functor', 'Monad']
 
 class Functor(Generic[A], metaclass=ABCMeta):
     """
-    a functor is
+    a functor is basic class supporting fmap and unbox method.
+    **fmap()**: is a method aiming to process the boxed data type(eg.a type that inherits from Functor)
+    and to map it to operations that only support basic types.
+    **unbox()**: is a method to get the raw data(maybe basic types) from a boxed data type.
     """
+
     @abstractmethod
     def fmap(self, f: Callable[[A], B]) -> 'Functor[B]':
         pass
