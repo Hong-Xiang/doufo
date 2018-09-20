@@ -32,6 +32,10 @@ class ConvertersDict:
         Args:  
             `self`  
         """
+        keys = sorted(self.converters.keys(),
+                      key=cmp_to_key(tuple_type_compare))
+        return {k: self.converters[k] for k in keys}
+
     def register(self, src: type, tar: type) -> Callable[[T], B]:
         """doufo.convert.ConverterDict().register(): A decorator factory to define typing converting decorator
             Attributes:  
@@ -65,12 +69,12 @@ converters = ConvertersDict()
 
 @func()
 def convert_to(o, target_type):
-    """description  
+    """doufo.convert.convert_to: convert forward
     Args:  
-        `self`  
-        arg1 (`type`): description  
+        `o` (`A`): any object    
+        `target_type` (`type`): destination type    
     Returns:  
-        return (`type`):description  
+        return (`target_type`):description: object `o` in type of `target_type`
     Raises:
     """
     return converters.convert(type(o), target_type)(o)
@@ -78,7 +82,7 @@ def convert_to(o, target_type):
 
 @func()
 def convert(o, target_type):
-    """doufo.convert.convert  
+    """doufo.convert.convert: convert backwards
     Args:          
         `o` (`A`): any object    
         `target_type` (`type`): destination type    
