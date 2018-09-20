@@ -1,5 +1,4 @@
 """
-
 """
 
 from typing import Iterable, Callable, Optional, TypeVar
@@ -16,27 +15,31 @@ T = TypeVar('T')
 
 
 class PureIterable(Iterable[T], Functor[Iterable[T]], Monoid[Iterable[T]]):
+    """doufo.PureIterable: define abstract `Iterable` class inherited from `Iterable`  
+    `Function` and `Monoid`. Only iterable, iterator is not PureIterable
     """
-    Only iterable, iterator is not PureIterable
-    """
-
 
 class IterableElemMap(PureIterable[T]):
+    """doufo.IterableElemMap  
+    Attributes:  
+        `attr1` (type): Description
+    """
+
     """
     Iterable Functor, fmap functon on elements of iterable.
     Useful for chaining data.
     """
-    def __init__(self, source: PureIterable[T], opeartion=Optional[Callable]):
+    def __init__(self, source: PureIterable[T], operation=Optional[Callable]):
         self.source = source
-        if opeartion is None:
-            opeartion = identity
-        self.opeartion = opeartion
+        if operation is None:
+            operation = identity
+        self.operation = operation
 
     def fmap(self, f):
         return IterableElemMap(self, f)
 
     def __iter__(self):
-        return (self.opeartion(x) for x in self.source)
+        return (self.operation(x) for x in self.source)
 
     def unbox(self):
         return iter(self)
@@ -52,21 +55,34 @@ class IterableElemMap(PureIterable[T]):
         return IterableElemMap(IterableIterMap(self).filter(f))
 
 class IterableIterMap(PureIterable):
+    """doufo.IterableIterMap: impl of Iterable Functor, fmap on  
+    iterable itself, useful for concatenating, filtering, etc.
     """
-    Iterable Functor, fmap on iterable itself, useful for concatnating, 
-    filtering, etc.
-    """
-    def __init__(self, source: PureIterable, opeartion=Optional[Callable]):
+    def __init__(self, source: PureIterable, operation=Optional[Callable]):
+        """doufo.IterableIterMap.__init__  
+        Attributes:  
+            `source` (`PureIterable`): an iterable object  
+            `operation` (`Optional[Callable]`): `None` or `Callable`,  
+            used as the iterator of this object
+        """
         self.source = source
-        if opeartion is None:
-            opeartion = identity
-        self.opeartion = opeartion
+        if operation is None:
+            operation = identity
+        self.operation = operation
 
     def fmap(self, f):
+        # return IterableIterMap(f(self.source), f(self.operation))
         return ItertoolsIterable(self, f)
 
     def __iter__(self):
-        return (x for x in self.opeartion(self.source))
+        """doufo.IterableIterMap().__iter__: to define `iter()` of   
+        this `iterable`
+        Args:  
+            `self`  
+        Returns:  
+            return (`IterableIterMap`): next element 
+        """
+        return (x for x in self.operation(self.source))
 
     def unbox(self):
         return iter(self)

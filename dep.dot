@@ -1,0 +1,89 @@
+strict digraph "dependencies" {
+ratio = fill;node [style = filled];graph [rankdir = "LR",overlap = "scale", size = "8,10", ratio = "fill", fontsize = "16", fontname = "Helvetica",clusterrank = "local"];node [fontsize=7,shape=ellipse];"function.py"   [style = filled];
+"function.py" -> "control.py"
+"mixins.py"   [style = filled];
+"monoid.py"   [style = filled];
+"control.py"   [style = filled];
+"on_collections.py"   [style = filled];
+"on_collections.py" -> "function.py"
+"pair.py"   [style = filled];
+"pair.py" -> "control.py"
+"pair.py" -> "_dataclass.py"
+"qlambda.py"   [style = filled];
+"qlambda.py" -> "function.py"
+"qlambda.py" -> "control.py"
+"qlambda.py" -> "mixins.py"
+"list.py"   [style = filled];
+"list.py" -> "control.py"
+"_dataclass.py"   [style = filled];
+"convert.py"   [style = filled];
+"convert.py" -> "function.py"
+"iterable.py"   [style = filled];
+"iterable.py" -> "control.py"
+"iterable.py" -> "monoid.py"
+"iterable.py" -> "function.py"
+"iterable.py" -> "on_collections.py"
+"utils.py"   [style = filled];
+"maybe.py"   [style = filled];
+"maybe.py" -> "control.py"
+"collections/dataclasses_.py"   [style = filled];
+"collections/dataclasses_.py" -> "control.py"
+"collections/dataclasses_.py" -> "list.py"
+"collections/dataclasses_.py" -> "iterable.py"
+"collections/dataclasses_.py" -> "function.py"
+"collections/dataclasses_.py" -> "on_collections.py"
+"collections/dataclasses_.py" -> "collections/concatenate.py"
+"collections/dataclasses_.py" -> "_dataclass.py"
+"collections/dataclasses_.py" -> "tensor/unary_with_args.py"
+"collections/dataclasses_.py" -> "convert.py"
+"collections/table.py"   [style = filled];
+"collections/table.py" -> "control.py"
+"collections/table.py" -> "monoid.py"
+"collections/table.py" -> "collections/dataclasses_.py"
+"collections/table.py" -> "list.py"
+"collections/iterator.py"   [style = filled];
+"collections/concatenate.py"   [style = filled];
+"collections/concatenate.py" -> "monoid.py"
+"collections/concatenate.py" -> "list.py"
+"collections/dict.py"   [style = filled];
+"collections/dict.py" -> "control.py"
+"collections/composite.py"   [style = filled];
+"collections/composite.py" -> "control.py"
+"collections/composite.py" -> "monoid.py"
+"collections/composite.py" -> "list.py"
+"collections/foldable.py"   [style = filled];
+"tensor/unary_reduce.py"   [style = filled];
+"tensor/unary_reduce.py" -> "function.py"
+"tensor/matrix.py"   [style = filled];
+"tensor/matrix.py" -> "tensor/tensor.py"
+"tensor/matrix.py" -> "tensor/.py"
+"tensor/unary_with_args.py"   [style = filled];
+"tensor/unary_with_args.py" -> "function.py"
+"tensor/construct.py"   [style = filled];
+"tensor/construct.py" -> "function.py"
+"tensor/binary.py"   [style = filled];
+"tensor/binary.py" -> "function.py"
+"tensor/binary.py" -> "tensor/unary_with_args.py"
+"tensor/backends.py"   [style = filled];
+"tensor/backends.py" -> "function.py"
+"tensor/vector.py"   [style = filled];
+"tensor/vector.py" -> "tensor/tensor.py"
+"tensor/vector.py" -> "tensor/binary.py"
+"tensor/vector.py" -> "function.py"
+"tensor/tensor.py"   [style = filled];
+"tensor/tensor.py" -> "control.py"
+"tensor/tensor.py" -> "mixins.py"
+"tensor/tensor.py" -> "tensor/binary.py"
+"tensor/tensor.py" -> "tensor/unary.py"
+"tensor/tensor.py" -> "tensor/unary_reduce.py"
+"tensor/tensor.py" -> "tensor/unary_with_args.py"
+"tensor/unary.py"   [style = filled];
+"tensor/unary.py" -> "list.py"
+"tensor/unary.py" -> "function.py"
+"tensor/impls/matmul.py"   [style = filled];
+"tensor/impls/construct.py"   [style = filled];
+"tensor/impls/unary.py"   [style = filled];
+"io/api.py"   [style = filled];
+"io/api.py" -> "function.py"
+"io/data_class_fs.py"   [style = filled];
+}
