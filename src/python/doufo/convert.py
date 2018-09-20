@@ -32,6 +32,10 @@ class ConvertersDict:
         Args:  
             `self`  
         """
+        keys = sorted(self.converters.keys(),
+                      key=cmp_to_key(tuple_type_compare))
+        return {k: self.converters[k] for k in keys}
+
     def register(self, src: type, tar: type) -> Callable[[T], B]:
         """doufo.convert.ConverterDict().register(): A decorator factory to define typing converting decorator
             Attributes:  
