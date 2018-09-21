@@ -1,4 +1,8 @@
 # `douFo`- Data Orgnization Using Function Operations
+<a href="https://teamcity.tek-pi.com/viewType.html?buildTypeId=Doufo_Build&guest=1">
+<img src="https://teamcity.tek-pi.com/app/rest/builds/buildType:(id:Doufo_Build)/statusIcon"/>
+</a>
+
 This module provides ... *doufo* in Python, . 
 
 This module is the base module of the works in NeoBay 410, which consists some ...
@@ -19,6 +23,3 @@ Data flow under function operations
 11. [bl-Functor、Applicative 和 Monad](http://blog.leichunfeng.com/blog/2015/11/08/functor-applicative-and-monad/)
 12. [bg-Scala和范畴论 -- 对Monad的一点认识](https://www.jianshu.com/p/31377066bf97?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation)
 
-<a href="https://teamcity.tek-pi.com/viewType.html?buildTypeId=Doufo_Build&guest=1">
-<img src="https://teamcity.tek-pi.com/app/rest/builds/buildType:(id:Doufo_Build)/statusIcon"/>
-</a>
