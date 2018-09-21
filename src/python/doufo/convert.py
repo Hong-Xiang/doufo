@@ -16,7 +16,7 @@ B = TypeVar('B')
 
 
 class ConvertersDict:
-    """doufo.convert.ConverterDict: to define dictionary-like class to store converters.   
+    """doufo.ConverterDict: to define dictionary-like class to store converters.   
         Note, this class is hidden, and been used as `converters`
     Attributes:  
         `attr1` (type): Description
@@ -26,7 +26,7 @@ class ConvertersDict:
         self.converters = {}
 
     def sorted_converters_keys(self):
-        """doufo.convert.ConvertDict().sorted_converters_key: sort converter keys  
+        """doufo.ConvertDict().sorted_converters_key: sort converter keys  
         sort key according to their relationship (if parent- and child-class)   
             or their hash value.
         Args:  
@@ -37,7 +37,7 @@ class ConvertersDict:
         return {k: self.converters[k] for k in keys}
 
     def register(self, src: type, tar: type) -> Callable[[T], B]:
-        """doufo.convert.ConverterDict().register(): A decorator factory to define typing converting decorator
+        """doufo.ConverterDict().register(): A decorator factory to define typing converting decorator
             Attributes:  
                 `self`
                 `src` (`type`): source `type`,
@@ -53,7 +53,7 @@ class ConvertersDict:
 
 
     def convert(self, src: type, tar: type) -> Callable[[T], B]:
-        """ doufo.convert.ConvertDict().convert: define a converter from `type src` to `type tar`   
+        """ doufo.ConvertDict().convert: define a converter from `type src` to `type tar`   
             Attibutes:   
                 `self`
                 `src` (`type`): source `type`,    
@@ -69,12 +69,12 @@ converters = ConvertersDict()
 
 @func()
 def convert_to(o, target_type):
-    """description  
+    """doufo.convert_to: convert forward
     Args:  
-        `self`  
-        arg1 (`type`): description  
+        `o` (`A`): any object    
+        `target_type` (`type`): destination type    
     Returns:  
-        return (`type`):description  
+        return (`target_type`):description: object `o` in type of `target_type`
     Raises:
     """
     return converters.convert(type(o), target_type)(o)
@@ -82,7 +82,7 @@ def convert_to(o, target_type):
 
 @func()
 def convert(o, target_type):
-    """doufo.convert.convert  
+    """doufo.convert: convert backwards
     Args:          
         `o` (`A`): any object    
         `target_type` (`type`): destination type    
@@ -94,7 +94,7 @@ def convert(o, target_type):
 
 
 def tuple_type_compare(types0, types1):
-    """doufo.convert.tuple_type_compare: compare two types  
+    """doufo.tuple_type_compare: compare two types  
         if `types0` is 'bigger' than `types1`, return negative (<0);   
         otherwise, return positive (>0). Here 'bigger' is defined by   
         whether they are 'parent and child', or ituitively bigger    

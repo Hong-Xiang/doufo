@@ -10,12 +10,11 @@ from functools import partial, wraps
 from typing import Callable, Optional
 from multipledispatch import Dispatcher
 import functools
-from doufo.control import Monad
+from .control import Monad
 from typing import TypeVar
 import re
 import traceback
-__all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction',
-           'multidispatch', 'MultiDispatchFunction', 'tagfunc']
+__all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction', 'multidispatch', 'MultiDispatchFunction', 'tagfunc']
 
 A = TypeVar('A')
 B = TypeVar('B')
