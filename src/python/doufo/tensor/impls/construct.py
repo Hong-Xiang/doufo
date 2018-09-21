@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from scipy.sparse import coo_matrix
 
-from doufo.tensor.backends import TensorFlowBackend, NumpyBackend
+from doufo.tensor import TensorFlowBackend, NumpyBackend
 from doufo.tensor.construct import *
 
 
