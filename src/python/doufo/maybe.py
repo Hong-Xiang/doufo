@@ -12,6 +12,7 @@ from typing import TypeVar, Callable
 T = TypeVar('T')
 B = TypeVar('B')
 
+__all__ = ['Maybe']
 
 class Maybe(Monad[T]):
     """doufo.Maybe  define a `Type` or `None` class

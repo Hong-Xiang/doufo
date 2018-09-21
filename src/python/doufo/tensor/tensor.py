@@ -8,10 +8,11 @@ from .unary import *
 from .unary_reduce import *
 from .unary_with_args import *
 
-from doufo.tensor import (to_tensor_like, as_scalar, is_scalar, shape, ndim, sum_, shape, argmax, matmul)
+from doufo.tensor import to_tensor_like, as_scalar, is_scalar, shape, ndim, sum_, shape, argmax, matmul
 
 T = TypeVar('T')  # TensorLike
 
+__all__ = ['Tensor']
 
 class Tensor(Functor[T], FunctorArithmeticMixin):
     # HACK for radd to work

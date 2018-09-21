@@ -2,7 +2,7 @@ from typing import Sequence, TypeVar
 
 import numpy as np
 
-from doufo import (Functor, List, IterableElemMap, identity, head, concat, DataClass, flatten, converters)
+from doufo import Functor, List, IterableElemMap, identity, head, concat, DataClass, flatten, converters
 
 __all__ = ['DataList', 'DataArray', 'DataIterable']
 
