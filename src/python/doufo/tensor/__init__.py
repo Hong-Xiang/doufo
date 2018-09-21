@@ -6,4 +6,5 @@ from .binary import *
 from .tensor import Tensor
 from .matrix import Matrix
 from .vector import *
+from .backends import *
 from .impls import *

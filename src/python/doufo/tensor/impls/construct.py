@@ -2,8 +2,8 @@ import numpy as np
 import tensorflow as tf
 from scipy.sparse import coo_matrix
 
-from doufo.tensor import TensorFlowBackend, NumpyBackend
-from doufo.tensor.construct import *
+# from doufo.tensor import TensorFlowBackend, NumpyBackend
+from doufo.tensor import *
 
 
 @array.register(TensorFlowBackend)
