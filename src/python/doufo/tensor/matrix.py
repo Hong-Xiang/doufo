@@ -2,6 +2,7 @@ from .tensor import Tensor
 import numpy as np
 # from doufo.tensor import ndim
 
+__all__ = ["Matrix"]
 
 class Matrix(Tensor):
     def __init__(self, data):

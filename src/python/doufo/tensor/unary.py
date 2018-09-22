@@ -1,7 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from doufo import List, singledispatch
-from doufo.utils import method_not_support_msg
+from doufo import List, singledispatch, method_not_support_msg
 
 
 """
@@ -10,8 +9,7 @@ Provides the basic operation for unarray-like data.
 Example:
     shape: return the shape of input data.
 """
-__all__ = ['shape', 'ndim', 'size', 'abs_', 'unit',
-           'as_scalar', 'square', 'argmax']
+__all__ = ['shape', 'ndim', 'size', 'abs_', 'unit', 'as_scalar', 'square', 'argmax']
 
 
 @singledispatch()
