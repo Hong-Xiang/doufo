@@ -3,7 +3,7 @@ import tensorflow as tf
 
 import numpy as np
 
-__all__ = ['Backend', 'TensorFlowBackend', 'CNTKBackend', 'NumpyBackend']
+__all__ = ['backend', 'TensorFlowBackend', 'CNTKBackend', 'NumpyBackend']
 
 
 class Backend:
