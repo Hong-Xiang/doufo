@@ -1,4 +1,4 @@
-from doufo.function import WrappedFunction, Function, func, singledispatch, multidispatch, tagfunc, fmap, filter_, pass_key
+from doufo.function import WrappedFunction, Function, func, singledispatch, multidispatch, tagfunc
 from doufo.function import nargs, ndefs
 
 
@@ -141,32 +141,3 @@ def test_tagfunc():
     assert foo[str]('1', '2') == '122'
     assert foo[str](3, 6) == 15
     assert foo([1], [2]) == [1, 2]
-
-
-def test_fmap_list():
-    assert fmap(lambda x: x+1, [1, 2, 3]) == [2, 3, 4]
-
-
-def test_fmap_tuple():
-    assert fmap(lambda x: x+1, (1, 2, 3)) == (2, 3, 4)
-
-
-def test_fmap_dict_full():
-    assert fmap(lambda k, v: (k, v + 1), {'a': 1, 'b': 2}) == {'a': 2, 'b': 3}
-
-
-def test_fmap_dict_no_key():
-    assert fmap(pass_key(lambda x: x + 1),
-                {'a': 1, 'b': 2}) == {'a': 2, 'b': 3}
-
-
-def test_filter_list():
-    assert filter_(lambda x: x % 2 == 1, [1, 2, 3]) == [1, 3]
-
-
-def test_filter_tuple():
-    assert filter_(lambda x: x % 2 == 1, (1, 2, 3)) == (1, 3)
-
-
-def test_filter_dict_full():
-    assert filter_(lambda k, v: v % 2 == 1, {'a': 1, 'b': 2}) == {'a': 1}
