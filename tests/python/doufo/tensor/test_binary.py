@@ -32,7 +32,7 @@ def test_matmul_SparseTensor_Tensor():
 
     res = matmul(st, t)
     with tf.Session() as sess:
-        assert (sess.run(res) == np.array([[1, 1], [2, 2]])).all()
+        assert all_close(sess.run(res) == np.array([[1, 1], [2, 2]]))
 
 
 # TODO

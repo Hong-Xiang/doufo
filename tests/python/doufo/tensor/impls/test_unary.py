@@ -11,6 +11,7 @@ def test_split_shape():
 
 
 def test_split():
-    t = tf.constant([[1, 2], [3, 4]], dtype=tf.int64)
-    result = split(t, 1, 1)
-    assert str(result) == """Tensor("split_with_index/Slice:0", shape=(2, 2), dtype=int64)"""
+    with tf.Graph().as_default():
+        t = tf.constant([[1, 2], [3, 4]], dtype=tf.int64)
+        result = split(t, 1, 1)
+        assert str(result) == """Tensor("split_with_index/Slice:0", shape=(2, 2), dtype=int64)"""
