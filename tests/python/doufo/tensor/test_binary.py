@@ -23,7 +23,7 @@ def test_all_close_float():
     assert all_close(x, y) == False
     x = 0.0000000001
     y = 0.0000000002
-    assert all_close(x, y) == True
+    assert all_close(x, y)
 
 
 def test_matmul_SparseTensor_Tensor():
