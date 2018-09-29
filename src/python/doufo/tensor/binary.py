@@ -1,5 +1,4 @@
-from doufo import singledispatch, multidispatch
-from doufo.utils import method_not_support_msg
+from doufo import singledispatch, multidispatch, method_not_support_msg
 import numpy as np
 import tensorflow as tf
 from .unary_with_args import norm

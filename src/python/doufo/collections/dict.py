@@ -1,4 +1,4 @@
-from doufo import  Functor
+from doufo import Functor
 from collections import UserDict
 from typing import TypeVar
 

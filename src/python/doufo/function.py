@@ -10,12 +10,11 @@ from functools import partial, wraps
 from typing import Callable, Optional
 from multipledispatch import Dispatcher
 import functools
-from doufo.control import Monad
+from .control import Monad
 from typing import TypeVar
 import re
-
-__all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction',
-           'multidispatch', 'MultiDispatchFunction', 'tagfunc']
+import traceback
+__all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction', 'multidispatch', 'MultiDispatchFunction', 'tagfunc']
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -24,12 +23,19 @@ T = TypeVar('T')
 
 
 class Function(Callable, Monad[Callable]):
-    """
-    Function is such a class that inherits from Callable & Monad base class.
-    it defines basic methods that a function-like class/object should have.
-    """
-
+    '''
+       Abstract class of a wrapped function. Note, it alse has Monad parent class to make it 
+       has methods such as fmap and ubox.
+       
+       Basically, a Function object acts as a normal function, but some cool features. 
+       : Function(Callable, Monad[Callable])
+    '''
     def __call__(self, *args, **kwargs):
+        '''
+            call an Function object by firstly unboxing it.
+
+            : __call__(self, *args, **kwargs)
+        '''
         return self.unbox()(*args, **kwargs)
 
     def bind(self, f: 'Function') -> 'Function':
@@ -160,8 +166,10 @@ class WrappedFunction(Function):
     a WrappedFunction is a Function-based class that provides basic method implementation of Function.
     it supports '*args' that has a tuple for example:'*args = [(arg1,arg2,arg3...),arg4,arg5)'
     """
-
     def __init__(self, f, *, nargs=None, nouts=None, ndefs=None):
+        '''
+            __init__(self, f, *, nargs=None, nouts=None, ndefs=None)
+        '''
         self.f = f
         self._nargs = get_nargs(f, nargs)
         self._nouts = nouts
@@ -193,6 +201,9 @@ class WrappedFunction(Function):
                 return (result, *args[self.nargs:])
             else:
                 raise e
+        except Exception as e:
+                traceback.print_exc()
+
 
     def fmap(self, f: 'WrappedFunction') -> 'WrappedFunction':
         """
@@ -282,7 +293,6 @@ class SingleDispatchFunction(WrappedFunction):
     easier to extend and expand
     according to the type registered (only refer to the first param) dispatch the concrete implementation.
     """
-
     def __init__(self, f, nargs=None, nouts=None, ndefs=None):
         super().__init__(functools.singledispatch(f),
                          nargs=get_ndefs(f, nargs),
@@ -321,7 +331,6 @@ class MultiDispatchFunction(WrappedFunction):
     easier to extend and expand
     according to the types registered (maybe two or more types) dispatch the concrete implementation.
     """
-
     def __init__(self, f, *, nargs=None, nouts=None):
         super().__init__(Dispatcher(f.__name__),
                          nargs=get_nargs(f, nargs),
@@ -349,7 +358,6 @@ def multidispatch(*, nargs=None, nouts=None):
     """
     an extended decorator for getting nargs,nouts params.
     """
-
     def wrapper(f):
         return wraps(f)(MultiDispatchFunction(f, nargs=nargs, nouts=nouts))
 
@@ -372,7 +380,6 @@ class FunctionWithTag(Function):
     """
     to decorate a function so that it supports 'func[key]()'
     """
-
     def __init__(self, default_func, *, nargs=None, nouts=None, ndefs=None):
         self.default_func = default_func
         self._nargs = get_nargs(default_func, nargs)
@@ -425,7 +432,6 @@ def tagfunc(nargs=None, ndefs=None, nouts=None):
     """
     extended decorator for FunctionWithTag for getting the nargs,ndefs,nouts params.
     """
-
     def wrapper(f):
         return wraps(f)(FunctionWithTag(f, nargs=nargs, nouts=nouts, ndefs=ndefs))
 

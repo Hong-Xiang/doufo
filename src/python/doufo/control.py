@@ -17,55 +17,60 @@ __all__ = ['Functor', 'Monad']
 
 class Functor(Generic[A], metaclass=ABCMeta):
     """
-    Functor class is the abstract base class of all functors, which defines a set of \
-    functions those satify the properties of functors, who transfer a Category to \
-    another Category:
-    A functor F has to provide the capablitities:
-    1. morphism from A to F[A]
-    2. morphism form f: A->B to F[f]: F[A]->F[B]
-    In fact, the method 'map' is to provide the capablity
-    -----------------------------------------------------------------------
-    A:C
-    F[A]:D
-    f:A->B
-    map(f): F[A]->F[B]
+        Abstract class of `Functor`s. A `Functor` represents a type that can 
+        be mapped over. 
     """
 
     @abstractmethod
     def fmap(self, f: Callable[[A], B]) -> 'Functor[B]':
+        """
+            `fmap` applies a function (`Callable[[A], B]`) to all its inputs (`[A]').
+
+            :param `f`: a callable function with inputs `[A]` and output 'B'
+
+            :return: `Functor[B]`: a set of object of this class
+        """
         pass
 
     @abstractmethod
     def unbox(self) -> A:
+        """
+            Abstract method of `unbox` in class Functor
+            
+            :return: un-wrapped raw tensor.
+        """
         pass
 
 
 class Monad(Functor[A]):
     """
-    A monad is a functor who provide one more capablity, which is bind
-    A monad has to provide:
-    1. morphism from A to M[A]
-    2. morphism form f: A->B to M[f]: M[A]->M[B]
-    3. flatten: M[M[A]] -> M[A]
-    'flatMap' is flatten&Map indeed.
-    -----------------------------------------------------------------------
-    A:C
-    M[A]:D
-    f:A->B
-    map(M): M[A]->M[B]
-    g:A->M[B]
-    flatMap(g):M[A]->M[B]
-    flatten:M[M[A]]->M[A]
+        A monad can be thought as a composable computation description. It is 
+        a child class of `Functor` who pluses a binding feature. 
     """
 
     def __rshift__(self, f: Callable[[A], 'Monad[B]']) -> 'Monad[B]':
-        """ Alias to bind """
+        """
+            overwrite `>>` in Python to alias bind. For example: `(g>>f)(*) = g(f(*))`
+
+            :param `f`: A callable function with output `Monad[B]`
+        """
         return self.bind(f)
 
     @abstractmethod
     def fmap(self, f: Callable[[A], B]) -> 'Monad[B]':
+        """
+            `fmap` applies a function (`Callable[[A], B]`) to all its inputs (`[A]').
+
+            :param `f`: a callable function with inputs `[A]` and output 'B'
+
+            :return: `Monad[B]`: a set of object of this class
+        """
         pass
 
     @abstractmethod
     def bind(self, f: Callable[[A], 'Monad[B]']) -> 'Monad[B]':
+        """
+            To support function composition. for example `g(f(*)) = p(*)` where
+            `p = g.bind(f)`
+        """
         pass
