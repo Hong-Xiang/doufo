@@ -149,4 +149,23 @@ def test_shape_Tensor():
 
 
 def test_argmax():
+    assert np.argmax(Tensor([[1, 2], [2, 7]])) == 3
+    assert all_close(np.argmax(Tensor([[1, 2], [2, 7]]), axis=0), [1, 1])
+    assert all_close(np.argmax(Tensor([[1, 2], [2, 7]]), axis=1), [1, 1])
+
+
+def test_alatten():
+    f1 = flatten(Tensor([1, 2, 3, 4]))
+    assert f1.shape == [4, 1]
+    assert f1.ndim == 2
+
+    f2 = flatten(Tensor([[1, 2, 3], [3, 4, 5]]))
+    assert f2.shape == [2, 3]
+    assert f2.ndim == 2
+
+    f3 = flatten(Tensor([[[1, 2, 3], [4, 5, 6]], [[1, 2, 3], [4, 5, 6]], [[1, 2, 3], [4, 5, 6]]]))
+    assert f3.shape == [3, 6]
+    assert f3.ndim == 2
+#TODO(there are two @matmul.register(Tensor, Tensor) in project)
+def test_matmul_Tensor_Tensor():
     pass
