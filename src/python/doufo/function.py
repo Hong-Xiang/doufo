@@ -6,7 +6,7 @@ generating new PureFunction instance and finally get a complex function.
 
 import inspect
 from abc import abstractmethod
-from functools import partial, wraps
+from functools import partial, wraps, reduce
 from typing import Callable, Optional
 from multipledispatch import Dispatcher
 import functools
@@ -14,7 +14,8 @@ from .control import Monad
 from typing import TypeVar
 import re
 import traceback
-__all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction', 'multidispatch', 'MultiDispatchFunction', 'tagfunc']
+__all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch',
+           'SingleDispatchFunction', 'multidispatch', 'MultiDispatchFunction', 'tagfunc', 'fmap', 'filter_', 'pass_key']
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -26,10 +27,11 @@ class Function(Callable, Monad[Callable]):
     '''
        Abstract class of a wrapped function. Note, it alse has Monad parent class to make it 
        has methods such as fmap and ubox.
-       
+
        Basically, a Function object acts as a normal function, but some cool features. 
        : Function(Callable, Monad[Callable])
     '''
+
     def __call__(self, *args, **kwargs):
         '''
             call an Function object by firstly unboxing it.
@@ -135,14 +137,17 @@ def get_ndefs(f: Callable, hint: Optional[int]) -> Optional[int]:
         return _ndefs(f)
 
 
-p_few = re.compile(r"[\w()]+ missing (\d+) required positional arguments?: [\w,']+")
-p_many = re.compile(r"[\w()]+ takes (\d+) positional arguments?: but (\d+) were given")
+p_few = re.compile(
+    r"[\w()]+ missing (\d+) required positional arguments?: [\w,']+")
+p_many = re.compile(
+    r"[\w()]+ takes (\d+) positional arguments?: but (\d+) were given")
 
 
 class WrappedFunction(Function):
     '''
         implementation of a function class
     '''
+
     def __init__(self, f, *, nargs=None, nouts=None, ndefs=None):
         '''
             __init__(self, f, *, nargs=None, nouts=None, ndefs=None)
@@ -174,8 +179,7 @@ class WrappedFunction(Function):
             else:
                 raise e
         except Exception as e:
-                traceback.print_exc()
-
+            traceback.print_exc()
 
     def fmap(self, f: 'WrappedFunction') -> 'WrappedFunction':
         '''
@@ -263,6 +267,7 @@ class SingleDispatchFunction(WrappedFunction):
     '''
         dispatch for Wrapped Function, indicatd by the type of first argument
     '''
+
     def __init__(self, f, nargs=None, nouts=None, ndefs=None):
         super().__init__(functools.singledispatch(f),
                          nargs=get_ndefs(f, nargs),
@@ -292,6 +297,7 @@ class MultiDispatchFunction(WrappedFunction):
     '''
         (Multi-) dispatch for Wrapped Function, indicatd by the types of positioned arguments
     '''
+
     def __init__(self, f, *, nargs=None, nouts=None):
         super().__init__(Dispatcher(f.__name__),
                          nargs=get_nargs(f, nargs),
@@ -332,9 +338,10 @@ def flip(f: Callable) -> Function:
 class FunctionWithTag(Function):
     '''
         implementation of a function class, taged by f[tag](*)
-        
+
         tag is flexible, for example, it can be a other module
     '''
+
     def __init__(self, default_func, *, nargs=None, nouts=None, ndefs=None):
         self.default_func = default_func
         self._nargs = get_nargs(default_func, nargs)
@@ -386,3 +393,73 @@ def tagfunc(nargs=None, ndefs=None, nouts=None):
         return wraps(f)(FunctionWithTag(f, nargs=nargs, nouts=nouts, ndefs=ndefs))
 
     return wrapper
+
+
+@multidispatch(nargs=2, nouts=1)
+def fmap(f, x):
+    """
+    function version of fmap, when `x` is Functor, it will call `x.fmap(f)`.
+    design to support build-in types like `fmap(f, [1,2,3])`.
+    """
+    return x.fmap(f)
+
+
+@fmap.register(object, list)
+def _(f, x):
+    return [f(e) for e in x]
+
+
+@fmap.register(object, tuple)
+def _(f, x):
+    return tuple(f(e) for e in x)
+
+
+@fmap.register(object, dict)
+def _(f, x):
+    """
+    fmap for dict like, not `f` should have signature `f::key->value->(key, value)`
+    """
+    result = {}
+    for k, v in x.items():
+        k_, v_ = f(k, v)
+        result[k_] = v_
+    return result
+
+
+def pass_key(f):
+    """
+    helper function for fmap of dict to concern only on values.
+    `pass_key(f)` would return a function which shadow input `key` and combine it
+    with return of `f(value)` to `(key, f(value))`.
+    """
+    @func(nargs=1, nouts=1)
+    def wrapper(k, v):
+        return (k, f(v))
+    return wrapper
+
+
+@multidispatch(nargs=2, nouts=1)
+def filter_(f, x):
+    """
+    function version of filter, when `x` is a Functor of Monoid, it will call:
+    `reduce(lambda e: e.extend, x.fmap(f))`
+    """
+    return reduce(lambda e, v: e.extend(v), x.fmap(f))
+
+
+@filter_.register(object, list)
+def _(f, x):
+    return [e for e in x if f(e)]
+
+
+@filter_.register(object, tuple)
+def _(f, x):
+    return tuple(e for e in x if f(e))
+
+
+@filter_.register(object, dict)
+def _(f, x):
+    """
+    filter for dict, note `f` should have signature: `f::key->value->bool`
+    """
+    return {k: v for k, v in x.items() if f(k, v)}

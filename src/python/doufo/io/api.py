@@ -1,6 +1,9 @@
 from doufo import singledispatch
 from typing import Type, Optional
 import numpy as np
+import pathlib
+jfs = pathlib
+from jfs import Path
 
 __all__ = ['save', 'load', 'DataClassHints']
 
