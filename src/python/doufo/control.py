@@ -36,7 +36,7 @@ class Functor(Generic[A], metaclass=ABCMeta):
     def unbox(self) -> A:
         """
             Abstract method of `unbox` in class Functor
-            
+
             :return: un-wrapped raw tensor.
         """
         pass
