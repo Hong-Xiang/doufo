@@ -14,7 +14,9 @@ from .control import Monad
 from typing import TypeVar
 import re
 import traceback
-__all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction', 'multidispatch', 'MultiDispatchFunction', 'tagfunc']
+
+__all__ = ['Function', 'WrappedFunction', 'func', 'identity', 'flip', 'singledispatch', 'SingleDispatchFunction',
+           'multidispatch', 'MultiDispatchFunction', 'tagfunc']
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -28,8 +30,9 @@ class Function(Callable, Monad[Callable]):
        has methods such as fmap and ubox.
        
        Basically, a Function object acts as a normal function, but some cool features. 
-       : Function(Callable, Monad[Callable])
+       Function(Callable, Monad[Callable])
     '''
+
     def __call__(self, *args, **kwargs):
         '''
             call an Function object by firstly unboxing it.
@@ -41,7 +44,7 @@ class Function(Callable, Monad[Callable]):
     def bind(self, f: 'Function') -> 'Function':
         """
         this method allows a Function-based instance obj to bind another Function-based instance obj
-        for example: the composite function :'f2(f1)' is equivalent to 'f1.bind(f2)/f2.fmap(f1)'
+        for example: the composite function :`f2(f1)` is equivalent to `f1.bind(f2)/f2.fmap(f1)`
         :param f: a Function-class-based function
         :return: a Function-class-based function(is a composite func)
         """
@@ -77,8 +80,8 @@ class Function(Callable, Monad[Callable]):
     @abstractmethod
     def nouts(self) -> Optional[int]:
         """
-        an abstract method for retrieval of the amount of Function-based class's result after' __call__()'
-        :return: the amount of '__call__ 'result of the Function-based obj / if result is None ,return None
+        an abstract method for retrieval of the amount of Function-based class's result after` __call__()`
+        :return: the amount of `__call__`result of the Function-based obj / if result is None ,return None
         """
         pass
 
@@ -108,7 +111,7 @@ def _nargs(f) -> Optional[int]:
 
 def _ndefs(f):
     """
-    the concrete implementation of 'Function.ndefs'
+    the concrete implementation of `Function.ndefs`
     :param f: a Function-based instance obj
     :return: amount of default params
     """
@@ -122,9 +125,9 @@ def _ndefs(f):
 
 def _nouts(f):
     """
-    the concrete implementation of 'Function.nouts'
+    the concrete implementation of `Function.nouts`
     :param f: a Function-based instance obj
-    :return: amount of f's' __call__' results
+    :return: amount of f's` __call__` results
     """
     if isinstance(f, Function):
         return f.nouts
@@ -133,10 +136,10 @@ def _nouts(f):
 
 def get_nargs(f: Callable, hint: Optional[int]) -> Optional[int]:
     """
-    method '_nargs()' with hint
+    method `_nargs()` with hint
     :param f: a Function-based instance obj
     :param hint: a prediction of amount of args
-    :return: hint first,without hint invoke '_nargs()'
+    :return: hint first,without hint invoke `_nargs()`
     """
     if hint is not None:
         return hint
@@ -146,10 +149,10 @@ def get_nargs(f: Callable, hint: Optional[int]) -> Optional[int]:
 
 def get_ndefs(f: Callable, hint: Optional[int]) -> Optional[int]:
     """
-    method '_ndefs()' with hint
+    method `_ndefs()` with hint
     :param f: a Function-based instance obj
     :param hint: a prediction of amount of default args
-    :return: hint first,without hint invoke '_ndefs()'
+    :return: hint first,without hint invoke `_ndefs()`
     """
     if hint is not None:
         return hint
@@ -164,11 +167,12 @@ p_many = re.compile(r"[\w()]+ takes (\d+) positional arguments?: but (\d+) were 
 class WrappedFunction(Function):
     """
     a WrappedFunction is a Function-based class that provides basic method implementation of Function.
-    it supports '*args' that has a tuple for example:'*args = [(arg1,arg2,arg3...),arg4,arg5)'
+    it supports `*args` that has a tuple for example:`*args = [(arg1,arg2,arg3...),arg4,arg5)`
     """
+
     def __init__(self, f, *, nargs=None, nouts=None, ndefs=None):
         '''
-            __init__(self, f, *, nargs=None, nouts=None, ndefs=None)
+            `__init__(self, f, *, nargs=None, nouts=None, ndefs=None)`
         '''
         self.f = f
         self._nargs = get_nargs(f, nargs)
@@ -177,9 +181,9 @@ class WrappedFunction(Function):
 
     def __matmul__(self, f: 'Function') -> 'Function':
         """
-        support the operation: 'f1@f2'
+        support the operation: `f1@f2`
         :param f:a Function-based instance obj
-        :return:a composite Function-based obj (see 'Function.fmap()')
+        :return:a composite Function-based obj (see `Function.fmap()`)
         """
         return self.fmap(f)
 
@@ -202,12 +206,11 @@ class WrappedFunction(Function):
             else:
                 raise e
         except Exception as e:
-                traceback.print_exc()
-
+            traceback.print_exc()
 
     def fmap(self, f: 'WrappedFunction') -> 'WrappedFunction':
         """
-        a concrete implementation of 'Function.fmap()'
+        a concrete implementation of `Function.fmap()`
         :param f: a WrappedFunction obj or WrappedFunction-based instance obj
         :return: a WrappedFunction instance obj
         """
@@ -263,7 +266,7 @@ def nargs_left(nargs, ndefs, args) -> Optional[int]:
 def func(nargs: Optional[int] = None, nouts: Optional[int] = None, ndefs: Optional[int] = None):
     """
     decorates normal function to Function with (optional) number of arguments and outputs.
-    :param 'nargs, nouts, ndefs' are amount of args ,func '_call_' results and default values.
+    :param `nargs, nouts, ndefs` are amount of args ,func `_call_` results and default values.
     :return a wraps-decorated WrappedFunction obj
     """
     return lambda f: wraps(f)(WrappedFunction(f, nargs=nargs, nouts=nouts, ndefs=ndefs))
@@ -289,10 +292,11 @@ identity = WrappedFunction(lambda x: x, nargs=1, nouts=1, ndefs=0)
 
 class SingleDispatchFunction(WrappedFunction):
     """
-    provide a uniform interface for 'funtools.singledispatch'
+    provide a uniform interface for `funtools.singledispatch`
     easier to extend and expand
     according to the type registered (only refer to the first param) dispatch the concrete implementation.
     """
+
     def __init__(self, f, nargs=None, nouts=None, ndefs=None):
         super().__init__(functools.singledispatch(f),
                          nargs=get_ndefs(f, nargs),
@@ -302,10 +306,10 @@ class SingleDispatchFunction(WrappedFunction):
 
     def register(self, *args, **kwargs):
         """
-        an extended method for 'funtools.register'
+        an extended method for `funtools.register`
         :param args:params passing to singledispatch-decorated function for inference
         :param kwargs:params passing to singledispatch-decorated function for inference
-        :return:a decorator of 'f.register(type)'
+        :return:a decorator of `f.register(type)`
         """
         result = self.f.register(*args, **kwargs)
         if len(args) > 0:
@@ -316,7 +320,7 @@ class SingleDispatchFunction(WrappedFunction):
 def singledispatch(*, nargs=None, nouts=None, ndefs=None):
     """
         an extended decorator for getting nargs,ndefs,nouts params.
-        decorate both functools.singledispatch and func
+        decorate both `functools.singledispatch` and func
     """
 
     def wrapper(f):
@@ -327,10 +331,11 @@ def singledispatch(*, nargs=None, nouts=None, ndefs=None):
 
 class MultiDispatchFunction(WrappedFunction):
     """
-    provide a uniform interface for 'multipledispatch'
+    provide a uniform interface for `multipledispatch`
     easier to extend and expand
     according to the types registered (maybe two or more types) dispatch the concrete implementation.
     """
+
     def __init__(self, f, *, nargs=None, nouts=None):
         super().__init__(Dispatcher(f.__name__),
                          nargs=get_nargs(f, nargs),
@@ -342,9 +347,9 @@ class MultiDispatchFunction(WrappedFunction):
 
     def register(self, *types):
         """
-        an extended method for 'mutipledispatch.dispatcher.register'
+        an extended method for `mutipledispatch.dispatcher.register`
         :param types:types of vars
-        :return:a decorator of 'f.register(*types)'
+        :return:a decorator of `f.register(*types)`
         """
 
         def decorator(f):
@@ -358,6 +363,7 @@ def multidispatch(*, nargs=None, nouts=None):
     """
     an extended decorator for getting nargs,nouts params.
     """
+
     def wrapper(f):
         return wraps(f)(MultiDispatchFunction(f, nargs=nargs, nouts=nouts))
 
@@ -378,8 +384,9 @@ def flip(f: Callable) -> Function:
 
 class FunctionWithTag(Function):
     """
-    to decorate a function so that it supports 'func[key]()'
+    to decorate a function so that it supports `func[key]()`
     """
+
     def __init__(self, default_func, *, nargs=None, nouts=None, ndefs=None):
         self.default_func = default_func
         self._nargs = get_nargs(default_func, nargs)
@@ -432,6 +439,7 @@ def tagfunc(nargs=None, ndefs=None, nouts=None):
     """
     extended decorator for FunctionWithTag for getting the nargs,ndefs,nouts params.
     """
+
     def wrapper(f):
         return wraps(f)(FunctionWithTag(f, nargs=nargs, nouts=nouts, ndefs=ndefs))
 
