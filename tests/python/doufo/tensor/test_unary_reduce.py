@@ -1,7 +1,7 @@
 from doufo.tensor.unary_reduce import *
 import numpy as np
 import tensorflow as tf
-
+from doufo.tensor import all_close
 
 # TODO
 def test_sum_():
@@ -28,7 +28,7 @@ def test_sum_Tensor():
 
 def test_norm():
     tuple = (-4, -3, -2, -1, 0, 1, 2, 3, 4)
-    assert norm(tuple) == 7.745966692414834
+    assert all_close(norm(tuple) , 7.745966692414834)
 
 
 def test_is_scalar():
@@ -56,9 +56,6 @@ def test_argmax():
 
         def fmap(self, f):
             return f(np.array(self.data))
-
-        def unbox(self):
-            return self.data
 
     foo = Foo([[1, 2], [3, 4], [6, 5]])
     assert list(argmax(foo, 1)) == [1, 1, 0]

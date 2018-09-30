@@ -135,7 +135,7 @@ def test_transpose():
 
 def test_norm():
     t = Tensor([-4, -3, -2, -1, 0, 1, 2, 3, 4])
-    assert norm(t) == 7.745966692414834
+    assert all_close(norm(t) ,7.745966692414834)
 
 
 def test_all_close():

@@ -33,7 +33,7 @@ def test_eye():
 
 
 def test_one_hot1():
-    assert Matrix.one_hot([1, 2], [3, 4]) == np.array([[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]], dtype=float)
+    assert Matrix.one_hot([1, 2], [3, 4])==np.array([[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]], dtype=float)
 
 
 def test_one_hot2():
@@ -44,4 +44,4 @@ def test_one_hot2():
 
 
 def test_one_hot3():
-    assert Matrix.one_hot(1, 3) == np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]], dtype=float)
+    assert all_close(Matrix.one_hot(1, 3), np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]], dtype=float))
