@@ -28,7 +28,7 @@ def take(n: int, xs: Iterable[T]) -> Iterable[T]:
 def take_(xs: Iterable[T], n: int) -> Iterable[T]:
     raise TypeError(f"Invalid type of xs: {type(xs)}.")
 
-
+#TODO(The abc here does not exist.)
 @take_.register(collections.abc.Sequence)
 def _(xs: Iterable[T], n: int) -> Iterable[T]:
     return xs[:n]
