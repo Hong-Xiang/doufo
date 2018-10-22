@@ -1,4 +1,4 @@
-from doufo.tensor import Vector, Tensor, matmul, Matrix
+from doufo.tensor import Vector, Tensor, matmul, Matrix, project, all_close
 import numpy as np
 import pytest
 
@@ -61,6 +61,7 @@ def test_ndarray_Tensor():
     assert matmul(n, t) == Tensor([[14, 32], [32, 27]])
 
 
-# TODO
 def test_Vector_Vector_ndarray():
-    pass
+    v = Vector([[1, 1], [1, 1]])
+    n = np.array([[1, 1], [1, 1]])
+    assert all_close(project(v, n), np.array([[0.5, 0.5], [0.5, 0.5]]))
