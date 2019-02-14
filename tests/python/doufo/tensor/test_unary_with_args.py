@@ -18,25 +18,21 @@ def test_transpose_ndarray():
 
 
 def test_transpose_Tensor():
-    new_g = tf.Graph()
-    with new_g.as_default():
+    with tf.Graph().as_default():
         con = tf.constant([[1, 2], [3, 4]])
 
-    with tf.Session(graph=new_g) as new_sess:
-        assert all_close(new_sess.run(transpose(con)), [[1, 3], [2, 4]])
-        assert all_close(new_sess.run(transpose(con, perm=[0, 1])), [[1, 2], [3, 4]])
+        with tf.Session() as new_sess:
+            assert all_close(new_sess.run(transpose(con)), [[1, 3], [2, 4]])
+            assert all_close(new_sess.run(transpose(con, perm=[0, 1])), [[1, 2], [3, 4]])
 
 
-# TODO
-@pytest.mark.skip()
 def test_transpose_Variable():
-    my_variable = tf.get_variable("my_variable", [1, 1, 1])
-    my_variable2 = tf.constant([1, 1, 1])
-    with tf.Session() as sess:
-        sess.run(my_variable.initializer)
+    with tf.Graph().as_default():
+        my_variable = tf.get_variable("my_variable", [0, 0, 0])
 
-        print(sess.run(transpose(my_variable)))
-        print(sess.run(transpose(my_variable2)))
+        with tf.Session() as new_sess:
+            new_sess.run(my_variable.initializer)
+            assert list(new_sess.run(transpose(my_variable))) == []
 
 
 def test_norm():
@@ -83,31 +79,54 @@ def test_flatten_ndarray2():
         assert isinstance(e, NotImplementedError)
         assert e == """"Flatten for numpy Tensor with batch_dim != 0 is not implemented yet")"""
 
-#TODO
-@pytest.mark.skip()
-def test_one_hot():
-    pass
-#TODO
-@pytest.mark.skip()
-def test_one_hot_ndarray():
-    pass
-#TODO
-@pytest.mark.skip()
-def tests_tf_Tensor():
-    new_g = tf.Graph()
-    with new_g.as_default():
-        con_d = tf.constant([[1, 2], [3, 4]])
 
-    with tf.Session(graph=new_g) as new_sess:
-        res = new_sess.run(con_d)
-        assert res == 10
+@pytest.fixture()
+def one_hot_result():
+    return np.array([[1, 0, 0, 0],
+                     [0, 1, 0, 0],
+                     [0, 0, 1, 0]])
+
+
+def test_one_hot(one_hot_result):
+    class T():
+        def __init__(self, x: int, y: int, z: int):
+            self._ = np.array([x, y, z])
+
+        def fmap(self, x):
+            _ = self._
+            return x(_)
+
+    t = T(0, 1, 2)
+    assert all_close(one_hot(t, 4), one_hot_result)
+
+
+def test_one_hot_npy(one_hot_result):
+    assert all_close(one_hot(np.array([0, 1, 2]), 4), one_hot_result)
+
+
+def test_one_hot_tf_Tensor():
+    def one_hot_result():
+        return np.array([[[0, 1, 0, 0, ],
+                          [0, 0, 1, 0, ]],
+
+                         [[0, 0, 0, 1, ],
+                          [0, 0, 0, 0, ]]])
+
+    with tf.Graph().as_default():
+        t = tf.constant([[1, 2], [3, 4]])
+
+        with tf.Session() as new_sess:
+            assert all_close(new_sess.run(one_hot(t, 4)), one_hot_result())
+
 
 def test_split():
     try:
         split('1', '1', '1', '1')
     except Exception as e:
-        assert isinstance(e,NotImplementedError)
-#TODO(cntk Obsolete)
+        assert isinstance(e, NotImplementedError)
+
+
+# TODO(cntk Obsolete)
 @pytest.mark.skip()
 def test_flatten_cntk():
     pass

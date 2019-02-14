@@ -3,9 +3,17 @@ import numpy as np
 import tensorflow as tf
 from doufo.tensor import all_close
 
-# TODO
 def test_sum_():
-    pass
+    class A():
+        def __init__(self, x: int, y: int) -> list:
+            self._ = [x, y]
+
+        def fmap(self, x):
+            _ = self._
+            return x(_)
+
+    a = A(1, 2)
+    assert sum_(a) ==  3
 
 
 def test_sum_list():

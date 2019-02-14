@@ -1,3 +1,4 @@
+import pytest
 from functools import partial
 from itertools import dropwhile
 from doufo import IterableElemMap, IterableIterMap,Count
@@ -47,12 +48,14 @@ def test_IterableElemMap_empty():
     assert type(res.source) == tuple
 
 
-# TODO
+# TODO(NameError: name 'ItertoolsIterable' is not defined)
+@pytest.mark.skip("not implemented yet.")
 def test_IterableElemMap_extend():
     pass
 
 
-# TODO
+# TODO(NameError: name 'ItertoolsIterable' is not defined)
+@pytest.mark.skip("not implemented yet.")
 def test_IterableElemMap_filter():
     pass
 
@@ -70,7 +73,8 @@ def test_IterableIterMap_init2():
     assert res.operation is not None
 
 
-# TODO（Source code is error）
+# TODO（NameError: name 'ItertoolsIterable' is not defined）
+@pytest.mark.skip("not implemented yet.")
 def test_IterableIterMap_fmap():
     pass
 
@@ -87,12 +91,14 @@ def test_IterableIterMap_unbox():
         z += 1
 
 
-# TODO（Source code is error）
+# TODO（NameError: name 'ItertoolsIterable' is not defined）
+@pytest.mark.skip("not implemented yet.")
 def test_IterableIterMap_extend():
     pass
 
 
-# TODO（Source code is error）
+# TODO（NameError: name 'ItertoolsIterable' is not defined）
+@pytest.mark.skip("not implemented yet.")
 def test_IterableIterMap_filter():
     pass
 
@@ -108,5 +114,6 @@ def test_empty():
 
 
 #TODO(The abc in on_collections.py:32 does not exist.)
+@pytest.mark.skip("not implemented yet.")
 def test_take_():
     pass

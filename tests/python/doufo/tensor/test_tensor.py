@@ -1,3 +1,4 @@
+import pytest
 from doufo.tensor import Tensor, all_close
 import numpy as np
 from doufo.tensor.unary import *
@@ -33,14 +34,19 @@ def test_size():
     assert Tensor([[[1, 2, 3], [4, 5, 6]], [[1, 2, 3], [4, 5, 6]]]) == 12
 
 
-# TODO
 def test_getitem():
-    pass
+    n = np.array([[1, 2], [3, 4]])
+    t = Tensor(n)
+    assert t[:] == n
+    n = np.array([[1, 2], [3]])
+    t = Tensor(n)
+    assert t[1] == 3
 
 
-# TODO
 def test_setitem():
-    pass
+    t = Tensor([[1, 2], [3, 4]])
+    t[-1] = [2]
+    assert all_close(t.data[-1], [2, 2])
 
 
 def test_iter():
@@ -66,9 +72,11 @@ def test_matmul():
     assert all_close(t1 @ t2, [[3, 6], [3, 6]])
 
 
-# TODO
 def test_rmatmul():
-    pass
+    t1 = Tensor([[1, 2], [1, 2]])
+    t2 = Tensor([[1, 2], [1, 2]])
+
+    assert all_close(t1.__rmatmaul__(t2),[[3, 6], [3, 6]])
 
 
 def test_len():
@@ -135,7 +143,7 @@ def test_transpose():
 
 def test_norm():
     t = Tensor([-4, -3, -2, -1, 0, 1, 2, 3, 4])
-    assert all_close(norm(t) ,7.745966692414834)
+    assert all_close(norm(t), 7.745966692414834)
 
 
 def test_all_close():
@@ -166,6 +174,9 @@ def test_alatten():
     f3 = flatten(Tensor([[[1, 2, 3], [4, 5, 6]], [[1, 2, 3], [4, 5, 6]], [[1, 2, 3], [4, 5, 6]]]))
     assert f3.shape == [3, 6]
     assert f3.ndim == 2
-#TODO(there are two @matmul.register(Tensor, Tensor) in project)
+
+
+# TODO(there are two @matmul.register(Tensor, Tensor) in project all from binary.py:26)
+@pytest.mark.skip("not implemented yet.")
 def test_matmul_Tensor_Tensor():
     pass
