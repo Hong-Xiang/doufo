@@ -22,7 +22,7 @@ def _(t):
 def array(shape, dtype, name=None):
     """
     Construct multi dimensional array for specific backend
-    :return: constructed array.
+    :return: constructed array
     """
     raise NotImplementedError
 

@@ -74,5 +74,3 @@ class Monad(Functor[A]):
             `p = g.bind(f)`
         """
         pass
-
-
