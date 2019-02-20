@@ -3,7 +3,7 @@ import tensorflow as tf
 
 import numpy as np
 
-__all__ = ['backend', 'TensorFlowBackend', 'CNTKBackend', 'NumpyBackend']
+__all__ = ["backend", "TensorFlowBackend", "CNTKBackend", "NumpyBackend"]
 
 
 class Backend:
@@ -12,6 +12,7 @@ class Backend:
 
 class TensorFlowBackend(Backend):
     pass
+
 
 class CNTKBackend(Backend):
     pass
@@ -23,11 +24,7 @@ class NumpyBackend(Backend):
 
 @singledispatch(nargs=1, nouts=1)
 def backend(b):
-    backend_map = {
-        tf: TensorFlowBackend,
-        C: CNTKBackend,
-        np: NumpyBackend
-    }
+    backend_map = {tf: TensorFlowBackend, C: CNTKBackend, np: NumpyBackend}
     if b in backend_map:
         return backend_map[b]
     raise TypeError(f"Can't specify backend for {type(b)}")
@@ -38,18 +35,17 @@ def _(b):
     return TensorFlowBackend
 
 
-
-
-
 @backend.register(np.ndarray)
 def _(b):
     return NumpyBackend
+
 
 try:
     import cntk as C
 except ImportError:
     pass
 else:
+
     @backend.register(C.Variable)
     @backend.register(C.Function)
     def _(b):

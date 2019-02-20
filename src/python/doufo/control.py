@@ -5,24 +5,31 @@ Usually the PureFunction class is used to implement this rather than the basic f
 
 Monad: to be added
 """
+from __future__ import annotations
 
 from typing import Generic, TypeVar, Callable
 from abc import abstractmethod, ABCMeta
+import functools
+import toolz.functoolz as functoolz
 
-A = TypeVar('A')
-B = TypeVar('B')
+A = TypeVar("A")
+B = TypeVar("B")
 
-__all__ = ['Functor', 'Monad']
+__all__ = ["Functor", "Monad"]
 
 
 class Functor(Generic[A], metaclass=ABCMeta):
     """
         Abstract class of `Functor`s. A `Functor` represents a type that can 
-        be mapped over. 
+        be mapped over.
+
+        Need to satisfy:
+            x.map(identity) == identity(x)
+            x.map(compose(f, g)) == x.map(f).map(g)
     """
 
     @abstractmethod
-    def fmap(self, f: Callable[[A], B]) -> 'Functor[B]':
+    def fmap(self, f: Callable[[A], B]) -> Functor[B]:
         """
             `fmap` applies a function (`Callable[[A], B]`) to all its inputs (`[A]').
 
@@ -30,7 +37,7 @@ class Functor(Generic[A], metaclass=ABCMeta):
 
             :return: `Functor[B]`: a set of object of this class
         """
-        pass
+        ...
 
     @abstractmethod
     def unbox(self) -> A:
@@ -48,7 +55,7 @@ class Monad(Functor[A]):
         a child class of `Functor` who pluses a binding feature. 
     """
 
-    def __rshift__(self, f: Callable[[A], 'Monad[B]']) -> 'Monad[B]':
+    def __rshift__(self, f: Callable[[A], Monad[B]]) -> Monad[B]:
         """
             overwrite `>>` in Python to alias bind. For example: `(g>>f)(*) = g(f(*))`
 
@@ -56,23 +63,26 @@ class Monad(Functor[A]):
         """
         return self.bind(f)
 
-    @abstractmethod
-    def fmap(self, f: Callable[[A], B]) -> 'Monad[B]':
+    def fmap(self, f: Callable[[A], B]) -> Monad[B]:
         """
-            `fmap` applies a function (`Callable[[A], B]`) to all its inputs (`[A]').
+            `fmap` applies a function: (x: A) => B to all its inputs (`[A]').
 
             :param `f`: a callable function with inputs `[A]` and output 'B'
 
             :return: `Monad[B]`: a set of object of this class
         """
-        pass
+        return self.bind(lambda x: self.__class__(f(x)))
 
     @abstractmethod
-    def bind(self, f: Callable[[A], 'Monad[B]']) -> 'Monad[B]':
+    def bind(self, f: Callable[[A], Monad[B]]) -> Monad[B]:
         """
             To support function composition. for example `g(f(*)) = p(*)` where
             `p = g.bind(f)`
         """
-        pass
+        ...
 
+    def pipe(self, *functions):
+        return functools.reduce(lambda m, f: m.bind(f), functions, self)
 
+    def __join__(self):
+        return self.bind(functoolz.identity)

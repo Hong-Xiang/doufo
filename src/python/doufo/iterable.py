@@ -9,15 +9,17 @@ import itertools
 from .on_collections import take_
 from functools import partial
 
-__all__ = ['PureIterable', 'IterableElemMap', 'IterableIterMap', 'Count']
 
-T = TypeVar('T')
+__all__ = ["PureIterable", "IterableElemMap", "IterableIterMap", "Count"]
+
+T = TypeVar("T")
 
 
 class PureIterable(Iterable[T], Functor[Iterable[T]], Monoid[Iterable[T]]):
     """doufo.PureIterable: define abstract `Iterable` class inherited from `Iterable`  
     `Function` and `Monoid`. Only iterable, iterator is not PureIterable
     """
+
 
 class IterableElemMap(PureIterable[T]):
     """doufo.IterableElemMap  
@@ -29,6 +31,7 @@ class IterableElemMap(PureIterable[T]):
     Iterable Functor, fmap functon on elements of iterable.
     Useful for chaining data.
     """
+
     def __init__(self, source: PureIterable[T], operation=Optional[Callable]):
         self.source = source
         if operation is None:
@@ -54,10 +57,12 @@ class IterableElemMap(PureIterable[T]):
     def filter(self, f):
         return IterableElemMap(IterableIterMap(self).filter(f))
 
+
 class IterableIterMap(PureIterable):
     """doufo.IterableIterMap: impl of Iterable Functor, fmap on  
     iterable itself, useful for concatenating, filtering, etc.
     """
+
     def __init__(self, source: PureIterable, operation=Optional[Callable]):
         """doufo.IterableIterMap.__init__  
         Attributes:  
@@ -108,5 +113,5 @@ class Count(PureIterable):
 
 
 @take_.register(Iterable)
-def _(xs: Iterable, n: int)->Iterable:
+def _(xs: Iterable, n: int) -> Iterable:
     return IterableIterMap(xs, itertools.islice(0, n))
